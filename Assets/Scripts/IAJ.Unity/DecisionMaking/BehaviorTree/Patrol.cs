@@ -14,6 +14,8 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.BehaviorTree.BehaviourTrees
 {
     class Patrol : Selector
     {
+
+        public IsCharacterNearTarget checker;
         public Patrol(Monster character, GameObject target)
         {
             List<Task> tasks = new List<Task>();
@@ -45,6 +47,8 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.BehaviorTree.BehaviourTrees
                     )
              );
             */
+
+            checker = new IsCharacterNearTarget(character, target, character.enemyStats.AwakeDistance);
             tasks.Add(
                 new Sequence(new List<Task>
                                 {
@@ -106,6 +110,12 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.BehaviorTree.BehaviourTrees
             }
             return Result.Success;
             */
+
+            if(currentChild != 0 && checker.Run() == Result.Success)
+            {
+                currentChild = 0;
+                return Result.Running;
+            }
 
             if (children.Count > this.currentChild)
             {

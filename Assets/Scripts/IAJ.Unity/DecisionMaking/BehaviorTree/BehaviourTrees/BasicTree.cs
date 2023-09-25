@@ -18,14 +18,14 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.BehaviorTree.BehaviourTrees
             // Additionally it is possible to create more complex behaviour by combining different tasks and composite tasks...
             this.children = new List<Task>()
             {
-                /*
+                
                 new IsCharacterNearTarget(character, target, character.enemyStats.AwakeDistance),
                 new Pursue(character, target, character.enemyStats.WeaponRange),
                 new LightAttack(character),
                 new MoveTo(character,character.DefaultPosition,1.0f)
-                */
+                
 
-                new Patrol(character, target),
+                //new Patrol(character, target),
             };
 
         }

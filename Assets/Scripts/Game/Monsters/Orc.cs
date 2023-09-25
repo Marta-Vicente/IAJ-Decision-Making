@@ -23,7 +23,6 @@ namespace Assets.Scripts.Game.NPCs
             this.enemyStats.SimpleDamage = 6;
             this.enemyStats.AwakeDistance = 15;
             this.enemyStats.WeaponRange = 3;
-            this.BehaviourTree = new OrcBasicTree(this, Target);
         }
 
         public override void InitializeBehaviourTree()
@@ -48,8 +47,21 @@ namespace Assets.Scripts.Game.NPCs
             //TODO Create a Behavior tree that combines Patrol with other behaviors...
             //var mainTree = new Patrol(this, position1, position2);
 
-            this.BehaviourTree = new BasicTree(this, Target);
+            this.BehaviourTree = new OrcBasicTree(this, Target);
          }
+
+        public override void FixedUpdate()
+        {
+            if (GameManager.Instance.gameEnded) return;
+            if (usingBehaviourTree)
+            {
+                if (this.BehaviourTree != null)
+                    this.BehaviourTree.Run();
+                else
+                    this.BehaviourTree = new OrcBasicTree(this, Target);
+            }
+
+        }
 
     }
 }

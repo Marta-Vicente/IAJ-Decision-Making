@@ -60,7 +60,7 @@ namespace Assets.Scripts.Game.NPCs
             // TODO but in the children's class
         }
 
-        void FixedUpdate()
+        public virtual void FixedUpdate()
         {
             if (GameManager.Instance.gameEnded) return;
             if (usingBehaviourTree)
