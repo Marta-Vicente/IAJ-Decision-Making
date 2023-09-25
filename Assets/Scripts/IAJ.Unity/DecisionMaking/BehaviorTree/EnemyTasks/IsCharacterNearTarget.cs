@@ -28,7 +28,9 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.BehaviorTree.EnemyTasks
         public override Result Run()
         {
             if (Vector3.Distance(Character.gameObject.transform.position, this.Target.transform.position) <= range)
+            {
                 return Result.Success;
+            }
             else return Result.Failure;
 
         }

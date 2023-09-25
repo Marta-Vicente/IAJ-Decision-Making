@@ -8,7 +8,8 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.BehaviorTree
 {
     public class Selector : CompositeTask
     {
-   
+
+        public Boolean iHaveFinished;
         public Selector(List<Task> tasks) : base(tasks)
         {
         }
@@ -21,10 +22,31 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.BehaviorTree
         public override Result Run()
         {
 
-            // TODO implement
+            if (children.Count > this.currentChild)
+            {
+                Result result = children[currentChild].Run();
 
+                if (result == Result.Running)
+                    return Result.Running;
 
-            return Result.Failure;
+                else if (result == Result.Failure)
+                {
+                    currentChild++;
+                    if (children.Count <= this.currentChild)
+                    {
+                        currentChild = 0;
+                        return Result.Failure;
+                    }
+
+                    return Result.Running;
+                }
+                else
+                {
+                    currentChild = 0;
+                    return Result.Success;
+                }
+            }
+            return Result.Success;
 
         }
     }

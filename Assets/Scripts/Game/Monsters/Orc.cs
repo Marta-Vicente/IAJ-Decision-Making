@@ -23,6 +23,7 @@ namespace Assets.Scripts.Game.NPCs
             this.enemyStats.SimpleDamage = 6;
             this.enemyStats.AwakeDistance = 15;
             this.enemyStats.WeaponRange = 3;
+            this.BehaviourTree = new OrcBasicTree(this, Target);
         }
 
         public override void InitializeBehaviourTree()

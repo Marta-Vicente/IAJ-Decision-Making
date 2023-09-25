@@ -11,20 +11,13 @@ using Assets.Scripts.Game.NPCs;
 
 namespace Assets.Scripts.IAJ.Unity.DecisionMaking.BehaviorTree.BehaviourTrees
 {
-   class BasicTree : Sequence
+   class OrcBasicTree : Selector
     {
-        public BasicTree(Monster character, GameObject target) {
+        public OrcBasicTree(Monster character, GameObject target) {
             // To create a new tree you need to create each branck which is done using the constructors of different tasks
             // Additionally it is possible to create more complex behaviour by combining different tasks and composite tasks...
             this.children = new List<Task>()
             {
-                /*
-                new IsCharacterNearTarget(character, target, character.enemyStats.AwakeDistance),
-                new Pursue(character, target, character.enemyStats.WeaponRange),
-                new LightAttack(character),
-                new MoveTo(character,character.DefaultPosition,1.0f)
-                */
-
                 new Patrol(character, target),
             };
 

@@ -18,25 +18,37 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.BehaviorTree.EnemyTasks
 
         public float range;
 
-        public MoveTo(Monster character, Vector3 target, float _range)
+        public float timeout = 10f;
+
+        public float time;
+
+        public bool force;
+
+        public MoveTo(Monster character, Vector3 target, float _range, bool force = true)
         {
             this.Character = character;
             this.Target = target;
             range = _range;
+            this.force = force;
         }
 
         public override Result Run()
         {
-            if (Target == null)
+            if (Target == null || (!force && time > timeout))
+            {
+                time = 0;
                 return Result.Failure;
+            }
 
             if (Vector3.Distance(Character.transform.position, this.Target) <= range)
             {
+                time = 0;
                 return Result.Success;
             }
             else
             {
                 Character.StartPathfinding(Target);
+                time += Time.deltaTime;
                 return Result.Running;
             }
 
