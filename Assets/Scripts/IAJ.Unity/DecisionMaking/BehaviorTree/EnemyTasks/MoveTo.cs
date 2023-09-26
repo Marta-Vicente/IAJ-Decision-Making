@@ -24,12 +24,13 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.BehaviorTree.EnemyTasks
 
         public bool force;
 
-        public MoveTo(Monster character, Vector3 target, float _range, bool force = true)
+        public MoveTo(Monster character, Vector3 target, float _range, bool force = true, float timeout = 10f)
         {
             this.Character = character;
             this.Target = target;
             range = _range;
             this.force = force;
+            this.timeout = timeout;
         }
 
         public override Result Run()

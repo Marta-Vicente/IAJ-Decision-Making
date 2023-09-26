@@ -14,45 +14,24 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.BehaviorTree.BehaviourTrees
 {
     class Patrol : Selector
     {
-
+        public static event EventHandler<Vector3> Scream;
         public IsCharacterNearTarget checker;
+        public MoveTo hunting;
+        public bool IsOnTheHunt = false;
+        public Vector3 HuntingTarget;
+        public float HuntingTimerMax = 20f;
+
         public Patrol(Monster character, GameObject target)
         {
             List<Task> tasks = new List<Task>();
-            /*
-            tasks.Add(
-                new Selector(
-                    new List<Task> { new Sequence(
-                                            new List<Task>
-                                            {
-                                                new IsCharacterNearTarget(character, target, character.enemyStats.WeaponRange),
-                                                new Pursue(character, target, character.enemyStats.WeaponRange),
-                                                new LightAttack(character)
-                                            }
-                                    ) ,
-                                     new Sequence(
-                                            new List<Task>
-                                            {
-                                                new MoveTo(character, new Vector3(character.DefaultPosition.x + 10,
-                                                                                   character.DefaultPosition.y,
-                                                                                   character.DefaultPosition.z), 1.0f),
-                                                new MoveTo(character, new Vector3(character.DefaultPosition.x - 10,
-                                                                                   character.DefaultPosition.y,
-                                                                                   character.DefaultPosition.z), 1.0f)
-                                            }
-                                         ),
-                                    new MoveTo(character, character.DefaultPosition, 1.0f)
-                                    }
-
-                    )
-             );
-            */
 
             checker = new IsCharacterNearTarget(character, target, character.enemyStats.AwakeDistance);
+            hunting = new MoveTo(character, character.DefaultPosition, 1f, false, HuntingTimerMax);
             tasks.Add(
                 new Sequence(new List<Task>
                                 {
                                     new IsCharacterNearTarget(character, target, character.enemyStats.AwakeDistance),
+                                    new WAARRGGHHH(character as Orc, target),
                                     new Pursue(character, target, character.enemyStats.WeaponRange),
                                     new LightAttack(character)
                                 })
@@ -73,45 +52,29 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.BehaviorTree.BehaviourTrees
             tasks.Add(new MoveTo(character, character.DefaultPosition, 1.0f));
 
             this.children = tasks;
+
+            Scream += HeardScream;
         }
 
         
         public override Result Run()
         {
-            /*
-            Result result;
-            if (currentChild < children.Count)
-            {
-               result = children[currentChild].Run();
-            }
-            else
-            {
-                return Result.Success;
-            }
 
-            Debug.Log(result + " " + currentChild);
-
-            if(result == Result.Running) return Result.Running;
-
-            switch (currentChild)
+            if (IsOnTheHunt && currentChild != 0 && checker.Run() == Result.Failure)
             {
-                case 0:
-                    if (result == Result.Success || result == Result.Failure)
-                    {
-                        currentChild = 2;
-                    }
-                    break;
-                case 1:
-                    currentChild ++;
-                    break;
-                case 2:
+                Result result = hunting.Run();
+                if (result == Result.Success || result == Result.Failure)
+                {
                     currentChild = 0;
-                    return Result.Success;
+                    IsOnTheHunt = false;
+                    return Result.Running;
+                }
+                return Result.Running;
             }
-            return Result.Success;
-            */
 
-            if(currentChild != 0 && checker.Run() == Result.Success)
+
+
+            if (currentChild != 0 && checker.Run() == Result.Success)
             {
                 currentChild = 0;
                 return Result.Running;
@@ -131,7 +94,7 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.BehaviorTree.BehaviourTrees
                     {
                         currentChild = 0;
                         children[currentChild].Run();
-                        //return Result.Failure;
+                        return Result.Failure;
                     }
 
                     return Result.Running;
@@ -140,12 +103,25 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.BehaviorTree.BehaviourTrees
                 {
                     currentChild = 0;
                     children[currentChild].Run();
-                    //return Result.Success;
+                    return Result.Success;
                 }
             }
             return Result.Success;
         }
-        
-        
+
+        public void HeardScream(object sender, Vector3 e)
+        {
+            Debug.Log("WAAAAGHH! at " + e);
+            IsOnTheHunt = true;
+            HuntingTarget = e;
+            hunting.Target = HuntingTarget; 
+            
+        }
+
+        public static void OnScream(Vector3 target)
+        {
+            Scream?.Invoke(null, target);
+        }
+
     }
 }

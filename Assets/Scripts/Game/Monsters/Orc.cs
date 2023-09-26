@@ -13,6 +13,8 @@ namespace Assets.Scripts.Game.NPCs
 
     public class Orc : Monster
     {
+
+        public AudioSource audioSource;
         public Orc()
         {
             this.enemyStats.Type = "Orc";
@@ -61,6 +63,14 @@ namespace Assets.Scripts.Game.NPCs
                     this.BehaviourTree = new OrcBasicTree(this, Target);
             }
 
+        }
+
+        public void PlayAudio()
+        {
+            if (!audioSource.isPlaying)
+            {
+                audioSource.Play();
+            }
         }
 
     }
