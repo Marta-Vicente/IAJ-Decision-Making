@@ -7,6 +7,7 @@ using Assets.Scripts.IAJ.Unity.DecisionMaking.BehaviorTree;
 using Assets.Scripts.IAJ.Unity.DecisionMaking.BehaviorTree.BehaviourTrees;
 //using Assets.Scripts.IAJ.Unity.Formations;
 using System.Collections.Generic;
+using UnityEditor;
 
 namespace Assets.Scripts.Game.NPCs
 {
@@ -15,6 +16,7 @@ namespace Assets.Scripts.Game.NPCs
     {
 
         public AudioSource audioSource;
+        public GameObject screamView;
         public Orc()
         {
             this.enemyStats.Type = "Orc";
@@ -71,6 +73,17 @@ namespace Assets.Scripts.Game.NPCs
             {
                 audioSource.Play();
             }
+        }
+
+        public void VisualizeAudio(Vector3 pos)
+        {
+            pos.y = 5f;
+            screamView.transform.position = pos;
+            GameObject newObject = Instantiate(screamView);
+            Scream s = newObject.AddComponent<Scream>();
+            s.centerPosition = pos;
+            s.asset = newObject;
+            
         }
 
     }

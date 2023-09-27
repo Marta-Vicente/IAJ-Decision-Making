@@ -32,7 +32,7 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.BehaviorTree.BehaviourTrees
                                 {
                                     new IsCharacterNearTarget(character, target, character.enemyStats.AwakeDistance),
                                     new WAARRGGHHH(character as Orc, target),
-                                    new Pursue(character, target, character.enemyStats.WeaponRange),
+                                    new PursueOrc(character, target, character.enemyStats.WeaponRange),
                                     new LightAttack(character)
                                 })
             );
@@ -77,6 +77,7 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.BehaviorTree.BehaviourTrees
             if (currentChild != 0 && checker.Run() == Result.Success)
             {
                 currentChild = 0;
+                IsOnTheHunt = false;
                 return Result.Running;
             }
 

@@ -9,6 +9,7 @@ using Assets.Scripts.Game.NPCs;
 using Assets.Scripts.Game;
 using static UnityEngine.GraphicsBuffer;
 using Assets.Scripts.IAJ.Unity.DecisionMaking.BehaviorTree;
+using System.Threading;
 
 namespace Assets.Scripts.IAJ.Unity.DecisionMaking.BehaviorTree.EnemyTasks
 {
@@ -27,6 +28,7 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.BehaviorTree.EnemyTasks
         {
             BehaviourTrees.Patrol.OnScream(target.transform.position);
             orc.PlayAudio();
+            orc.VisualizeAudio(orc.transform.position);
             return Result.Success;
         }
 
