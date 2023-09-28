@@ -22,7 +22,7 @@ namespace Assets.Scripts.Game
             public float Time;
             public int Money;
             public int Level;
-
+            public int MaxMana;
         }
 
         protected GameObject character;

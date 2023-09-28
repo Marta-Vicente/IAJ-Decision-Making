@@ -104,21 +104,21 @@ public class AutonomousCharacter : NPC
         //initialization of the GOB decision making
         //let's start by creating 4 main goals
 
-        this.SurviveGoal = new Goal(SURVIVE_GOAL, 0.0f);
+        this.SurviveGoal = new Goal(SURVIVE_GOAL, 1.0f);
 
-        this.GainLevelGoal = new Goal(GAIN_LEVEL_GOAL, 0.0f)
+        this.GainLevelGoal = new Goal(GAIN_LEVEL_GOAL, 1.0f)
         {
             InsistenceValue = 10.0f,
             ChangeRate = 0.2f
         };
 
-        this.GetRichGoal = new Goal(GET_RICH_GOAL, 0.0f)
+        this.GetRichGoal = new Goal(GET_RICH_GOAL, 1.0f)
         {
             InsistenceValue = 5.0f,
             ChangeRate = 0.2f
         };
 
-        this.BeQuickGoal = new Goal(BE_QUICK_GOAL, 0.0f)
+        this.BeQuickGoal = new Goal(BE_QUICK_GOAL, 1.0f)
         {
             ChangeRate = 1f
         };
@@ -140,7 +140,7 @@ public class AutonomousCharacter : NPC
         foreach (var enemy in GameObject.FindGameObjectsWithTag("Skeleton"))
         {
             this.Actions.Add(new SwordAttack(this, enemy));
-            //this.Actions.Add(new DivineSmite(this, enemy));
+            this.Actions.Add(new DivineSmite(this, enemy));
         }
 
         foreach (var enemy in GameObject.FindGameObjectsWithTag("Orc"))
@@ -165,15 +165,12 @@ public class AutonomousCharacter : NPC
 
         foreach (var potion in GameObject.FindGameObjectsWithTag("ManaPotion"))
         {
-            //this.Actions.Add(new GetManaPotion(this, potion));
+            this.Actions.Add(new GetManaPotion(this, potion));
         }
 
         //Then we have a series of extra actions available to Sir Uthgard
         this.Actions.Add(new LevelUp(this));
- 
-
-
-
+        this.Actions.Add(new ShieldOfFaith(this));
 
 
         // Initialization of Decision Making Algorithms
@@ -257,10 +254,11 @@ public class AutonomousCharacter : NPC
             {
                 this.GOBDecisionMaking.InProgress = true;
             }
-            //else if ()  //Add here other Algorithms...
+            /*else if ()  //Add here other Algorithms...
             {
                     //this.GOAPDecisionMaking.InitializeDecisionMakingProcess();
             }
+            */
         }
 
         if (this.controlledByPlayer)

@@ -41,7 +41,7 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.GOB
                 newValue += duration * goal.ChangeRate;
 
                 //Here is a bug: Insistence varies between 0-10, it should be normalized
-                discontentment += goal.GetDiscontentment(newValue);
+                discontentment += goal.GetDiscontentment(newValue)/float.MaxValue * 10;
             }
 
             return discontentment;
@@ -52,14 +52,35 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.GOB
             // Find the action leading to the lowest discontentment
             InProgress = true;
             Action bestAction = null;
-            var bestValue = float.PositiveInfinity;
+
+            bestAction = actions[0];
+            float bestValue = float.MaxValue;
+            if (bestAction.CanExecute())
+            {
+                 bestValue = CalculateDiscontentment(bestAction, goals);
+            }
             var secondBestValue = float.PositiveInfinity;
             var thirdBestValue = float.PositiveInfinity;
 
-            //TODO implement                
-            
+            foreach(var action in actions)
+            {
+                if (action.CanExecute())
+                {
+                    var value = CalculateDiscontentment(action, goals);
+                    if (value < bestValue) 
+                    { 
+                        bestValue = value;
+                        bestAction = action;
+                    }
+                }
+            }
+
+            if(bestAction != null && bestAction.CanExecute()) this.ActionDiscontentment[bestAction] = bestValue;
+
             InProgress = false;
             return bestAction;
         }
+
+        
     }
 }

@@ -49,6 +49,9 @@ namespace Assets.Scripts.Game
             if (propertyName.Equals(Properties.POSITION))
                 return this.GameManager.Character.gameObject.transform.position;
 
+            if (propertyName.Equals(Properties.MAXMANA))
+                return this.GameManager.Character.baseStats.MaxMana;
+
             //if an object name is found in the dictionary of disposable objects, then the object still exists. The object has been removed/destroyed otherwise
             return this.GameManager.disposableObjects.ContainsKey(propertyName);
         }
