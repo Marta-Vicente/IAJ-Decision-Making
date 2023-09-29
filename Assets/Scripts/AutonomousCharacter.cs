@@ -104,7 +104,7 @@ public class AutonomousCharacter : NPC
         //initialization of the GOB decision making
         //let's start by creating 4 main goals
 
-        this.SurviveGoal = new Goal(SURVIVE_GOAL, 1.0f);
+        this.SurviveGoal = new Goal(SURVIVE_GOAL, 10.0f);
 
         this.GainLevelGoal = new Goal(GAIN_LEVEL_GOAL, 1.0f)
         {
@@ -373,6 +373,9 @@ public class AutonomousCharacter : NPC
             }
 
         }
+
+        this.TotalProcessingTimeText.text = "Process. Time: " + this.GOBDecisionMaking.TotalProcessingTime.ToString("F");
+        this.BestDiscontentmentText.text = "Best Discontentment: " + GOBDecisionMaking.BestDiscontentmentValue.ToString("F");
 
     }
 

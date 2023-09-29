@@ -15,6 +15,9 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.GOB
         public Action secondBestAction;
         public Action thirdBestAction;
 
+        public float TotalProcessingTime = 0f;
+        public static float BestDiscontentmentValue = float.MaxValue;
+
         // Utility based GOB
         public GOBDecisionMaking(List<Action> _actions, List<Goal> goals)
         {
@@ -41,9 +44,11 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.GOB
                 newValue += duration * goal.ChangeRate;
 
                 //Here is a bug: Insistence varies between 0-10, it should be normalized
-                discontentment += goal.GetDiscontentment(newValue)/float.MaxValue * 10;
+                //discontentment += goal.GetDiscontentment(newValue)/float.MaxValue * 10;
+                discontentment += goal.GetDiscontentment(newValue);
             }
 
+            if(discontentment < BestDiscontentmentValue) BestDiscontentmentValue = discontentment;
             return discontentment;
         }
 
@@ -96,6 +101,9 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.GOB
             if (thirdBestAction != null && thirdBestAction.CanExecute()) this.ActionDiscontentment[thirdBestAction] = thirdBestValue;
 
             InProgress = false;
+
+            TotalProcessingTime += Time.deltaTime;
+
             return bestAction;
         }
 
