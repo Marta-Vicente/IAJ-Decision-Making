@@ -68,14 +68,32 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.GOB
                 {
                     var value = CalculateDiscontentment(action, goals);
                     if (value < bestValue) 
-                    { 
+                    {
+                        thirdBestValue = secondBestValue;
+                        thirdBestAction = secondBestAction;
+                        secondBestValue = bestValue;
+                        secondBestAction = bestAction;
                         bestValue = value;
                         bestAction = action;
                     }
+                    if(value < secondBestValue && value > bestValue)
+                    {
+                        secondBestAction = action;
+                        secondBestValue = value;
+                    }
+                    if (value < thirdBestValue && value > secondBestValue && value > bestValue)
+                    {
+                        thirdBestAction = action;
+                        thirdBestValue = value;
+                    }
+
+
                 }
             }
 
             if(bestAction != null && bestAction.CanExecute()) this.ActionDiscontentment[bestAction] = bestValue;
+            if (secondBestAction != null && secondBestAction.CanExecute()) this.ActionDiscontentment[secondBestAction] = secondBestValue;
+            if (thirdBestAction != null && thirdBestAction.CanExecute()) this.ActionDiscontentment[thirdBestAction] = thirdBestValue;
 
             InProgress = false;
             return bestAction;

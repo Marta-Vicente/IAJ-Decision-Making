@@ -12,8 +12,8 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.BehaviorTree.EnemyTasks
 {
     class PursueOrc : Pursue
     {
-        private float timeToWaagh = 10f;
-        private float time = 0f;
+        private float timeToWaagh = 5f;
+        private float time = 5.1f;
         private WAARRGGHHH scream;
         public PursueOrc(Monster character, GameObject target, float _range):base(character, target, _range) 
         {
@@ -22,13 +22,12 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.BehaviorTree.EnemyTasks
 
         public override Result Run()
         {
-            if(time > timeToWaagh) 
+            time += Time.deltaTime;
+            if (time > timeToWaagh) 
             {
                 scream.Run();
                 time = 0f;
             }
-
-            time += Time.deltaTime;
 
             return base.Run();
         }

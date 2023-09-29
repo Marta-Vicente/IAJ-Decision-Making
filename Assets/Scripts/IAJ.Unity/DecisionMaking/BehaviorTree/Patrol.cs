@@ -31,7 +31,6 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.BehaviorTree.BehaviourTrees
                 new Sequence(new List<Task>
                                 {
                                     new IsCharacterNearTarget(character, target, character.enemyStats.AwakeDistance),
-                                    new WAARRGGHHH(character as Orc, target),
                                     new PursueOrc(character, target, character.enemyStats.WeaponRange),
                                     new LightAttack(character)
                                 })

@@ -26,7 +26,7 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.BehaviorTree.EnemyTasks
 
         public override Result Run()
         {
-            BehaviourTrees.Patrol.OnScream(target.transform.position);
+            BehaviourTrees.Patrol.OnScream(orc.transform.position);
             orc.PlayAudio();
             orc.VisualizeAudio(orc.transform.position);
             return Result.Success;
