@@ -29,22 +29,6 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel.ForwardModelActio
             }
         }
 
-        public override float GetGoalChange(Goal goal)
-        {
-            var change = base.GetGoalChange(goal);
-
-            if (goal.Name == AutonomousCharacter.SURVIVE_GOAL)
-            {
-                change += this.expectedHPChange;
-            }
-            else if (goal.Name == AutonomousCharacter.GAIN_LEVEL_GOAL)
-            {
-                change += -this.expectedXPChange;
-            }
-  
-            return change;
-        }
-
         public override void Execute()
         {
             base.Execute();
@@ -53,13 +37,13 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel.ForwardModelActio
 
         public override bool CanExecute()
         {
-            return Character.baseStats.Mana >= 2;
+            return Character.baseStats.Mana >= 2 && base.CanExecute();
         }
 
         public override bool CanExecute(WorldModel worldModel)
         {
             int mana = (int)worldModel.GetProperty(Properties.MANA);
-            return mana >= 2;
+            return mana >= 2 && base.CanExecute(worldModel);
         }
 
 

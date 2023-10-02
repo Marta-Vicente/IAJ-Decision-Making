@@ -2,6 +2,8 @@
 using Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel.ForwardModelActions;
 using Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel;
 using UnityEngine;
+using System.Text;
+
 namespace Assets.Scripts.IAJ.Unity.DecisionMaking.GOB
 {
     public class GOBDecisionMaking
@@ -25,7 +27,7 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.GOB
             this.goals = goals;
             secondBestAction = new Action("yo");
             thirdBestAction = new Action("yo too");
-            this.ActionDiscontentment = new Dictionary<Action,float>();
+           
         }
 
 
@@ -34,6 +36,24 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.GOB
             // Keep a running total
             var discontentment = 0.0f;
             var duration = action.GetDuration();
+
+            /*
+            var bigger = 0f;
+            foreach (var goal in goals)
+            {
+                // Calculate the new value after the action
+                var newValue = goal.InsistenceValue + action.GetGoalChange(goal);
+
+                // The change rate is how much the goals changes per time
+                newValue += duration * goal.ChangeRate;
+
+                if (bigger < newValue) 
+                { 
+                    bigger = newValue;
+                }
+            }
+            */
+
 
             foreach (var goal in goals)
             {
@@ -45,16 +65,22 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.GOB
 
                 //Here is a bug: Insistence varies between 0-10, it should be normalized
                 //discontentment += goal.GetDiscontentment(newValue)/float.MaxValue * 10;
-                discontentment += goal.GetDiscontentment(newValue);
+                discontentment += goal.GetDiscontentment(/*NormalizeGoalValues(newValue, 0, bigger)*/ newValue);
             }
 
-            if(discontentment < BestDiscontentmentValue) BestDiscontentmentValue = discontentment;
+            if (discontentment < BestDiscontentmentValue)
+            {
+                BestDiscontentmentValue = discontentment;
+                Debug.Log("MY DISCONTEMENT IS BIG " + discontentment);
+            }
+            
             return discontentment;
         }
 
         public Action ChooseAction()
         {
             // Find the action leading to the lowest discontentment
+            this.ActionDiscontentment = new Dictionary<Action, float>();
             InProgress = true;
             Action bestAction = null;
 
@@ -72,7 +98,9 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.GOB
                 if (action.CanExecute())
                 {
                     var value = CalculateDiscontentment(action, goals);
-                    if (value < bestValue) 
+                    this.ActionDiscontentment.Add(action, value);
+
+                    if (value < bestValue)
                     {
                         thirdBestValue = secondBestValue;
                         thirdBestAction = secondBestAction;
@@ -81,7 +109,7 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.GOB
                         bestValue = value;
                         bestAction = action;
                     }
-                    if(value < secondBestValue && value > bestValue)
+                    if (value < secondBestValue && value > bestValue)
                     {
                         secondBestAction = action;
                         secondBestValue = value;
@@ -92,8 +120,8 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.GOB
                         thirdBestValue = value;
                     }
 
-
                 }
+
             }
 
             if(bestAction != null && bestAction.CanExecute()) this.ActionDiscontentment[bestAction] = bestValue;
@@ -107,6 +135,20 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.GOB
             return bestAction;
         }
 
-        
+        public static float NormalizeGoalValues(float value, float min, float max)
+        {
+            if (value < 0) value = 0.0f;
+            // Normalizing to 0-1
+            var x = (value - min) / (max - min);
+
+            // Multiplying it by 10
+            x *= 10;
+
+            Debug.Log(x);
+
+            return x;
+        }
+
+
     }
 }

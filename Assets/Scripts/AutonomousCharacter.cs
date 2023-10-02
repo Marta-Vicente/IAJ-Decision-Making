@@ -104,7 +104,7 @@ public class AutonomousCharacter : NPC
         //initialization of the GOB decision making
         //let's start by creating 4 main goals
 
-        this.SurviveGoal = new Goal(SURVIVE_GOAL, 10.0f);
+        this.SurviveGoal = new Goal(SURVIVE_GOAL, 1.0f);
 
         this.GainLevelGoal = new Goal(GAIN_LEVEL_GOAL, 1.0f)
         {
@@ -112,7 +112,7 @@ public class AutonomousCharacter : NPC
             ChangeRate = 0.2f
         };
 
-        this.GetRichGoal = new Goal(GET_RICH_GOAL, 1.0f)
+        this.GetRichGoal = new Goal(GET_RICH_GOAL, 5.0f)
         {
             InsistenceValue = 5.0f,
             ChangeRate = 0.2f
@@ -185,7 +185,7 @@ public class AutonomousCharacter : NPC
             }
         }
 
-        DiaryText.text += "My Diary \n I awoke. What a wonderful day to kill Monsters! \n";
+        DiaryText.text += "My Diary \n I awoke, AND I CHOOSE FUCKING VIOLENCE TODAY. What a wonderful day to kill Monsters! \n";
     }
 
     void FixedUpdate()
@@ -372,10 +372,8 @@ public class AutonomousCharacter : NPC
             }
 
         }
-
         this.TotalProcessingTimeText.text = "Process. Time: " + this.GOBDecisionMaking.TotalProcessingTime.ToString("F");
         this.BestDiscontentmentText.text = "Best Discontentment: " + GOBDecisionMaking.BestDiscontentmentValue.ToString("F");
-
     }
 
     private void UpdateDLGOAP()
