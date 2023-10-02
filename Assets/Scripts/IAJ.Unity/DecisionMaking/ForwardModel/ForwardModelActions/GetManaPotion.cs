@@ -22,7 +22,7 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel.ForwardModelActio
 
             var currentMana = (int)worldModel.GetProperty(Properties.MANA);
             var maxMana = (int)worldModel.GetProperty(Properties.MAXMANA);
-            return currentMana < maxMana;
+            return currentMana < 10;
         }
 
         public override void Execute()

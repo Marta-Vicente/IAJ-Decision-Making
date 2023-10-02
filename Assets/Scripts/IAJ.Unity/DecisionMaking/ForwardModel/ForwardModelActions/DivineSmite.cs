@@ -51,7 +51,18 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel.ForwardModelActio
             GameManager.Instance.DivineSmite(this.Target);
         }
 
-        
+        public override bool CanExecute()
+        {
+            return Character.baseStats.Mana >= 2;
+        }
+
+        public override bool CanExecute(WorldModel worldModel)
+        {
+            int mana = (int)worldModel.GetProperty(Properties.MANA);
+            return mana >= 2;
+        }
+
+
         public override void ApplyActionEffects(WorldModel worldModel)
         {
             base.ApplyActionEffects(worldModel);
