@@ -254,11 +254,10 @@ public class AutonomousCharacter : NPC
             {
                 this.GOBDecisionMaking.InProgress = true;
             }
-            /*else if ()  //Add here other Algorithms...
+            else if (GOAPActive)  //Add here other Algorithms...
             {
-                    //this.GOAPDecisionMaking.InitializeDecisionMakingProcess();
+                    this.GOAPDecisionMaking.InitializeDecisionMakingProcess();
             }
-            */
         }
 
         if (this.controlledByPlayer)
