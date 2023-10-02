@@ -52,7 +52,7 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.GOB
             var startTime = Time.realtimeSinceStartup;
 
             var currentValue = 0.0f;
-            var bestValue = 0.0f;
+            var bestValue = float.MaxValue;
 
             while (this.CurrentDepth >= 0)
             {
@@ -70,7 +70,7 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.GOB
                 }
 
                 var nextAction = this.Models[this.CurrentDepth].GetNextAction();
-                if (nextAction != null)
+                if (nextAction != null && nextAction.CanExecute(this.Models[this.CurrentDepth]))
                 {
                     this.Models[CurrentDepth + 1] = this.Models[CurrentDepth].GenerateChildWorldModel();
                     nextAction.ApplyActionEffects(this.Models[CurrentDepth + 1]);
@@ -84,6 +84,8 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.GOB
 
             this.TotalProcessingTime += Time.realtimeSinceStartup - startTime;
             this.InProgress = false;
+            Debug.Log(this.BestAction.ToString());
+
             return this.BestAction;
         }
     }

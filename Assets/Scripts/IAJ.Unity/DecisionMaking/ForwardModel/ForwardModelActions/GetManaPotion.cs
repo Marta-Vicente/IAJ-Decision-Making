@@ -44,12 +44,11 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel.ForwardModelActio
             return change;
         }
 
-        /*
         public override void ApplyActionEffects(WorldModel worldModel)
         {
             base.ApplyActionEffects(worldModel);
-            var maxHP = (int)worldModel.GetProperty(Properties.MAXHP);
-            worldModel.SetProperty(Properties.HP, maxHP);
+            var maxMana = (int)worldModel.GetProperty(Properties.MAXMANA);
+            worldModel.SetProperty(Properties.MANA, maxMana);
             worldModel.SetGoalValue(AutonomousCharacter.SURVIVE_GOAL, 0.0f);
 
             //disables the target object so that it can't be reused again
@@ -57,13 +56,12 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel.ForwardModelActio
         }
 
 
-        public override float GetHValue(WorldModel worldModel)
+        /*public override float GetHValue(WorldModel worldModel)
         {
             var currentHP = (int)worldModel.GetProperty(Properties.HP);
             var maxHP = (int)worldModel.GetProperty(Properties.MAXHP);
 
             return (currentHP / maxHP) + base.GetHValue(worldModel);
-        }
-        */
+        }*/
     }
 }

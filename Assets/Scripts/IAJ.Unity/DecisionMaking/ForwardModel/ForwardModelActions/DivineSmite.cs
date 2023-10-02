@@ -67,54 +67,18 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel.ForwardModelActio
         {
             base.ApplyActionEffects(worldModel);
 
-            int hp = (int)worldModel.GetProperty(Properties.HP);
-            int shieldHp = (int)worldModel.GetProperty(Properties.ShieldHP);
             int xp = (int)worldModel.GetProperty(Properties.XP);
 
-            int damage = 0;
-            /*
-            if (GameManager.Instance.StochasticWorld)
-            {
-                //execute the lambda function to calculate received damage based on the creature type
-                damage = this.dmgRoll.Invoke();
-            }
-            else
-            {
-                damage = this.enemySimpleDamage;
-            }
-            */
-            //calculate player's damage
-            /*
-            int remainingDamage = damage - shieldHp;
-            int remainingShield = Mathf.Max(0, shieldHp - damage);
-            int remainingHP;
+            int damage = int.MaxValue;
 
-            if(remainingDamage > 0)
-            {
-                remainingHP = (hp - remainingDamage);
-                worldModel.SetProperty(Properties.HP, remainingHP);
-            }
-
-            worldModel.SetProperty(Properties.ShieldHP, remainingShield);
             var surviveValue = worldModel.GetGoalValue(AutonomousCharacter.SURVIVE_GOAL);
-            worldModel.SetGoalValue(AutonomousCharacter.SURVIVE_GOAL, surviveValue + remainingDamage);
+            worldModel.SetGoalValue(AutonomousCharacter.SURVIVE_GOAL, (int)worldModel.GetProperty(Properties.HP));
 
-            */
-
-            //calculate Hit
-            //attack roll = D20 + attack modifier. Using 7 as attack modifier (+4 str modifier, +3 proficiency bonus)
-            int attackRoll = int.MaxValue;
-
-            if (attackRoll >= enemyAC || GameManager.Instance.StochasticWorld)
-            {
-                //there was an hit, enemy is destroyed, gain xp
-                //disables the target object so that it can't be reused again
-                worldModel.SetProperty(this.Target.name, false);
-                worldModel.SetProperty(Properties.XP, xp + this.xpChange);
-            }
+            worldModel.SetProperty(this.Target.name, false);
+            worldModel.SetProperty(Properties.XP, xp + this.xpChange);
         }
 
-        public override float GetHValue(WorldModel worldModel)
+        /*public override float GetHValue(WorldModel worldModel)
         {
             var hp = (int)worldModel.GetProperty(Properties.HP);
             
@@ -123,7 +87,7 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel.ForwardModelActio
                 return base.GetHValue(worldModel)/1.5f;
             }
             return 10.0f;
-        }
+        }*/
         
     }
 }
