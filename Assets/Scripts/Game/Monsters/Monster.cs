@@ -102,7 +102,12 @@ namespace Assets.Scripts.Game.NPCs
         public void AttackPlayer()
         {
             GameManager.Instance.EnemyAttack(this.gameObject);
-        }      
+        }
 
-     }
+        public bool InWeaponRange(GameObject target)
+        { 
+            return Vector3.Distance(this.transform.position, target.transform.position) <= enemyStats.WeaponRange; 
+        }
+
+    }
 }
