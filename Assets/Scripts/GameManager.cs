@@ -402,6 +402,10 @@ public class GameManager : MonoBehaviour
             this.Character.AddToDiary(" I am resting");
             this.Character.Resting = true;
             this.Character.StopTime = Time.time + AutonomousCharacter.RESTING_INTERVAL;
+            if (Sleep != null && !Sleep.isPlaying)
+            {
+                Sleep.Play();
+            }
         }
         else if (this.Character.StopTime < Time.time)
         {
@@ -409,7 +413,6 @@ public class GameManager : MonoBehaviour
             this.Character.baseStats.HP = Mathf.Min(this.Character.baseStats.HP, this.Character.baseStats.MaxHP);
             this.Character.Resting = false;
             this.WorldChanged = true;
-            if(Sleep != null) Sleep.Play();
         }
     }
 

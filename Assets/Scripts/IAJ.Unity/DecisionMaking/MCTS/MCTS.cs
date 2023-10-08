@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using Action = Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel.Action;
+using UnityEditor.Experimental.GraphView;
 
 namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
 {
@@ -41,6 +42,7 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
             this.MaxIterations = 1000;
             this.MaxIterationsPerFrame = 100;
             this.RandomGenerator = new System.Random();
+            this.InitialState = currentStateWorldModel;
         }
 
 
@@ -67,21 +69,22 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
 
         public Action ChooseAction()
         {
+            //InitializeMCTSearch();
             MCTSNode selectedNode;
             float reward;
 
             var startTime = Time.realtimeSinceStartup;
 
-            //while within computational budget
+            int i = 50;
+            while(i > 0)
+            {
+                var node1 = Selection(InitialNode);
+                reward = Playout(node1.State);
+                Backpropagate(node1, reward);
+                i--;
+            }
 
-                //Selection + Expansion
-
-                //Playout
-
-                //Backpropagation
-
-            // return best initial child
-            return null;
+            return BestAction(InitialNode);
         }
 
         // Selection and Expantion
@@ -91,33 +94,67 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
             MCTSNode currentNode = initialNode;
             MCTSNode bestChild;
 
+            while (!currentNode.State.IsTerminal())
+            {
+                nextAction = currentNode.State.GetNextAction();
+                if (currentNode.ChildNodes.Count == 0)
+                {
+                    return Expand(currentNode, nextAction);
+                }
+                else
+                {
+                    currentNode = BestChild(currentNode);
+                }
+            }
+
             //   while(!currentNode.State.IsTerminal())
 
                 // nextAction = currentNode.State.GetNextAction();
 
                 //Expansion
 
-            return null;
+            return currentNode;
         }
 
         protected virtual float Playout(WorldModel initialStateForPlayout)
         {
             Action[] executableActions;
 
-            //ToDo
-            return /*null;*/ 0f;
+            while (!initialStateForPlayout.IsTerminal())
+            {
+                executableActions = initialStateForPlayout.GetExecutableActions();
+                var ActionNumber = RandomGenerator.Next(executableActions.Length);
+                executableActions[ActionNumber].ApplyActionEffects(initialStateForPlayout);
+            }
+
+            return initialStateForPlayout.GetScore();
         }
 
         protected virtual void Backpropagate(MCTSNode node, float reward)
         {
             //ToDo, do not forget to later consider two advesary moves...
+
+            while(node != null)
+            {
+                node.N += 1;
+                node.Q += reward /* plus utc stuff */;
+                node = node.Parent;
+            }
         }
 
         protected MCTSNode Expand(MCTSNode parent, Action action)
         {
             WorldModel newState = parent.State.GenerateChildWorldModel();
-            //ToDo
-            return null;
+
+            action.ApplyActionEffects(newState);
+
+            MCTSNode child = new MCTSNode(newState);
+
+            child.Action = action;
+
+            parent.ChildNodes.Add(child);
+
+            return child;
         }
 
         protected virtual MCTSNode BestUCTChild(MCTSNode node)
@@ -130,8 +167,17 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
         //the exploration factor
         protected MCTSNode BestChild(MCTSNode node)
         {
-            //ToDo
-            return null;
+            MCTSNode bestChild = node.ChildNodes[0];
+            float bestValue = 0;
+            foreach (MCTSNode child in node.ChildNodes)
+            {
+                if(child.N > 0 && child.Q / child.N > bestValue)
+                {
+                    bestChild = child;
+                    bestValue = child.Q / child.N;
+                }
+            }
+            return bestChild;
         }
 
 

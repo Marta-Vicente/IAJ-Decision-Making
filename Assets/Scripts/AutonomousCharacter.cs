@@ -450,13 +450,17 @@ public class AutonomousCharacter : NPC
 
     private void UpdateMCTS()
     {
+        bool newDecision = false;
         if (this.MCTSDecisionMaking.InProgress)
         {
             var action = this.MCTSDecisionMaking.ChooseAction();
-            {
-                this.CurrentAction = action;
+
+            if (this.CurrentAction != null && !this.CurrentAction.Equals(action)) newDecision = true;
+
+            this.CurrentAction = action;
+
+            if (newDecision)
                 AddToDiary(" I decided to " + action.Name);
-            }
         }
         // Statistical and Debug data
         this.TotalProcessingTimeText.text = "Process. Time: " + this.MCTSDecisionMaking.TotalProcessingTime.ToString("F");

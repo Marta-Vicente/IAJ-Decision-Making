@@ -2,6 +2,7 @@
 using System.Linq;
 using UnityEngine;
 using Assets.Scripts.IAJ.Unity.Utils;
+using static UnityEngine.GraphicsBuffer;
 
 namespace Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel
 {
@@ -139,12 +140,34 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel
 
         public virtual bool IsTerminal()
         {
-            return true;
+            var AllChestsUsed = (int)GetProperty("Money") == 25;
+
+            var dead = false;
+            if((int) GetProperty("HP") <= 0) dead = true;
+
+            var timeOut = false;
+            if((float) GetProperty("Time") > 150f) timeOut = true;
+
+            return AllChestsUsed || dead || timeOut;
         }
         
 
         public virtual float GetScore()
         {
+            int money = (int)this.GetProperty("Money");
+            int HP = (int)this.GetProperty("HP");
+            float time = (float)this.GetProperty("Time");
+
+            // TODO : Should Time and other factors be taken into accoun?
+
+            // 0.0 loss , 1 win
+
+            if (HP <= 0) return 0.0f;
+            else if (money == 25)
+            {
+                return 1.0f;
+            }
+            else return 0.0f;
             return 0.0f;
         }
 
@@ -155,6 +178,11 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel
 
         public virtual void CalculateNextPlayer()
         {
+        }
+
+        public Dictionary<string, object> getD()
+        {
+            return this.Properties;
         }
     }
 }
