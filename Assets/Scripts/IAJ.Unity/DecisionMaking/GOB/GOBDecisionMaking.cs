@@ -81,17 +81,22 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.GOB
         {
             // Find the action leading to the lowest discontentment
             this.ActionDiscontentment = new Dictionary<Action, float>();
+
             InProgress = true;
             Action bestAction = null;
 
-            bestAction = actions[0];
+            //bestAction = actions[0];
             float bestValue = float.MaxValue;
+            /*
             if (bestAction.CanExecute())
             {
                  bestValue = CalculateDiscontentment(bestAction, goals);
             }
+            */
             var secondBestValue = float.PositiveInfinity;
             var thirdBestValue = float.PositiveInfinity;
+            secondBestAction = null;
+            thirdBestAction = null;
 
             foreach(var action in actions)
             {
@@ -123,10 +128,6 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.GOB
                 }
 
             }
-
-            if(bestAction != null && bestAction.CanExecute()) this.ActionDiscontentment[bestAction] = bestValue;
-            if (secondBestAction != null && secondBestAction.CanExecute()) this.ActionDiscontentment[secondBestAction] = secondBestValue;
-            if (thirdBestAction != null && thirdBestAction.CanExecute()) this.ActionDiscontentment[thirdBestAction] = thirdBestValue;
 
             InProgress = false;
 

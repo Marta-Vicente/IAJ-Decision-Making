@@ -85,17 +85,25 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.GOB
                     this.CurrentDepth--;
             }
 
+            if(listOfBestAction == null)
+            {
+                listOfBestAction = this.BestActionSequence;
+                this.BestAction = this.BestActionSequence[0];
+            }
+
             this.TotalProcessingTime += Time.realtimeSinceStartup - startTime;
             this.InProgress = false;
             this.BestDiscontentmentValue = bestValue;
 
             this.BestActionSequence = listOfBestAction; 
+            /*
             Debug.Log("+++++++++++++++++++++++");
             foreach (var action in this.BestActionSequence)
             {
                 Debug.Log("\n" + action.Name);
             }
             Debug.Log("+++++++++++++++++++++++");
+            */
 
             return this.BestAction;
         }

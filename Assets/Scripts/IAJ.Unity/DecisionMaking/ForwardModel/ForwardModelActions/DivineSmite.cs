@@ -21,8 +21,8 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel.ForwardModelActio
             if (target.tag.Equals("Skeleton"))
             {
                 this.dmgRoll = () => RandomHelper.RollD6();
-                this.enemySimpleDamage = 3;
-                this.expectedHPChange = 3.5f;
+                this.enemySimpleDamage = 0;
+                this.expectedHPChange = 0;
                 this.xpChange = 3;
                 this.expectedXPChange = 2.7f;
                 this.enemyAC = 10;
@@ -51,15 +51,42 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel.ForwardModelActio
         {
             base.ApplyActionEffects(worldModel);
 
+            int hp = (int)worldModel.GetProperty(Properties.HP);
             int xp = (int)worldModel.GetProperty(Properties.XP);
-
-            int damage = int.MaxValue;
+            int shieldHp = (int)worldModel.GetProperty(Properties.ShieldHP);
 
             var surviveValue = worldModel.GetGoalValue(AutonomousCharacter.SURVIVE_GOAL);
-            worldModel.SetGoalValue(AutonomousCharacter.SURVIVE_GOAL, (int)worldModel.GetProperty(Properties.HP));
+            worldModel.SetGoalValue(AutonomousCharacter.SURVIVE_GOAL, surviveValue);
 
             worldModel.SetProperty(this.Target.name, false);
             worldModel.SetProperty(Properties.XP, xp + this.xpChange);
+
+            var mana = (int)worldModel.GetProperty(Properties.MANA);
+            worldModel.SetProperty(Properties.MANA, mana - 2);
+
+            if (GameManager.Instance.StochasticWorld)
+            {
+                //there was an hit, enemy is destroyed, gain xp
+                //disables the target object so that it can't be reused again
+                worldModel.SetProperty(this.Target.name, false);
+                worldModel.SetProperty(Properties.XP, xp + this.xpChange);
+            }
+        }
+
+        public override float GetGoalChange(Goal goal)
+        {
+            var change = base.GetGoalChange(goal);
+
+            if (goal.Name == AutonomousCharacter.SURVIVE_GOAL)
+            {
+                change += this.expectedHPChange;
+            }
+            else if (goal.Name == AutonomousCharacter.GAIN_LEVEL_GOAL)
+            {
+                change += -this.expectedXPChange;
+            }
+
+            return change;
         }
 
         /*public override float GetHValue(WorldModel worldModel)
@@ -72,6 +99,6 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel.ForwardModelActio
             }
             return 10.0f;
         }*/
-        
+
     }
 }

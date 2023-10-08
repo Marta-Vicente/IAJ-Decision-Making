@@ -8,6 +8,15 @@ using Assets.Scripts.Game.NPCs;
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
+
+    public AudioSource Shield;
+    public AudioSource Smite;
+    public AudioSource Level;
+    public AudioSource Sword;
+    public AudioSource Open;
+    public AudioSource Drink;
+    public AudioSource Sleep;
+    public AudioSource Flash;
     public static class GameConstants
     {
         public const float UPDATE_INTERVAL = 2.0f;
@@ -192,6 +201,7 @@ public class GameManager : MonoBehaviour
             }
 
             this.WorldChanged = true;
+            if (Sword != null) Sword.Play();
         }
     }
 
@@ -247,6 +257,8 @@ public class GameManager : MonoBehaviour
                 }
 
                 this.WorldChanged = true;
+
+                if (Sword != null) Sword.Play();
             }
         }
     }
@@ -267,6 +279,8 @@ public class GameManager : MonoBehaviour
             this.Character.baseStats.Mana -= 2;
 
             this.WorldChanged = true;
+
+            if (this.Smite != null) Smite.Play();
         }
     }
 
@@ -278,6 +292,9 @@ public class GameManager : MonoBehaviour
             this.Character.baseStats.Mana -= 5;
             this.Character.AddToDiary(" My Shield of Faith will protect me!");
             this.WorldChanged = true;
+
+            if(this.Shield != null) Shield.Play();
+            
         }
     }
 
@@ -292,6 +309,7 @@ public class GameManager : MonoBehaviour
             Object.Destroy(chest);
             this.Character.baseStats.Money += 5;
             this.WorldChanged = true;
+            if(Open != null) Open.Play();
         }
     }
 
@@ -305,6 +323,7 @@ public class GameManager : MonoBehaviour
             Object.Destroy(manaPotion);
             this.Character.baseStats.Mana = 10;
             this.WorldChanged = true;
+            if(Drink != null) Drink.Play();
         }
     }
 
@@ -317,6 +336,7 @@ public class GameManager : MonoBehaviour
             Object.Destroy(potion);
             this.Character.baseStats.HP = this.Character.baseStats.MaxHP;
             this.WorldChanged = true;
+            if(Drink == null) Drink.Play();
         }
     }
 
@@ -340,6 +360,7 @@ public class GameManager : MonoBehaviour
                 this.Character.AddToDiary(" I leveled up to level " + this.Character.baseStats.Level);
                 this.Character.LevelingUp = false;
                 this.WorldChanged = true;
+                if (Level != null) Level.Play();
             }
         }
     }
@@ -388,6 +409,7 @@ public class GameManager : MonoBehaviour
             this.Character.baseStats.HP = Mathf.Min(this.Character.baseStats.HP, this.Character.baseStats.MaxHP);
             this.Character.Resting = false;
             this.WorldChanged = true;
+            if(Sleep != null) Sleep.Play();
         }
     }
 
@@ -399,6 +421,7 @@ public class GameManager : MonoBehaviour
             this.Character.transform.position = this.initialPosition;
             this.Character.baseStats.Mana -= 5;
             this.WorldChanged = true;
+            if (Flash != null) Flash.Play();    
         }
 
     }
