@@ -70,21 +70,22 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.GOB
                 }
 
                 var nextAction = this.Models[this.CurrentDepth].GetNextAction();
+
                 if (nextAction != null && nextAction.CanExecute(this.Models[this.CurrentDepth]))
                 {
                     this.Models[CurrentDepth + 1] = this.Models[CurrentDepth].GenerateChildWorldModel();
                     nextAction.ApplyActionEffects(this.Models[CurrentDepth + 1]);
                     this.BestActionSequence[CurrentDepth] = nextAction;
                     this.CurrentDepth++;
-                    this.TotalActionCombinationsProcessed++;
+                    processedActions++;
                 }
                 else
                     this.CurrentDepth--;
             }
 
             this.TotalProcessingTime += Time.realtimeSinceStartup - startTime;
+            this.TotalActionCombinationsProcessed = processedActions;
             this.InProgress = false;
-            Debug.Log(this.BestAction.ToString());
 
             return this.BestAction;
         }
