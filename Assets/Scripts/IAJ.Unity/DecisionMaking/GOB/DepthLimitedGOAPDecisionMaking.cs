@@ -54,6 +54,8 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.GOB
             var currentValue = 0.0f;
             var bestValue = float.MaxValue;
 
+            Action[] listOfBestAction = null;
+
             while (this.CurrentDepth >= 0)
             {
                 if (this.CurrentDepth >= MAX_DEPTH)
@@ -64,6 +66,7 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.GOB
                     {
                         bestValue = currentValue;
                         this.BestAction = this.BestActionSequence[0];
+                        listOfBestAction = (Action[]) this.BestActionSequence.Clone();
                     }
                     CurrentDepth -= 1;
                     continue;
@@ -83,9 +86,26 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.GOB
                     this.CurrentDepth--;
             }
 
+            if(listOfBestAction == null)
+            {
+                listOfBestAction = this.BestActionSequence;
+                this.BestAction = this.BestActionSequence[0];
+            }
+
             this.TotalProcessingTime += Time.realtimeSinceStartup - startTime;
             this.TotalActionCombinationsProcessed = processedActions;
             this.InProgress = false;
+            this.BestDiscontentmentValue = bestValue;
+
+            this.BestActionSequence = listOfBestAction; 
+            /*
+            Debug.Log("+++++++++++++++++++++++");
+            foreach (var action in this.BestActionSequence)
+            {
+                Debug.Log("\n" + action.Name);
+            }
+            Debug.Log("+++++++++++++++++++++++");
+            */
 
             return this.BestAction;
         }

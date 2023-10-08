@@ -4,31 +4,31 @@ using UnityEngine;
 
 namespace Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel.ForwardModelActions
 {
-    public class ShieldOfFaith : Action
+    public class Rest : Action
     {
         protected AutonomousCharacter Character { get; set; }
-        public ShieldOfFaith(AutonomousCharacter character) : base("ShieldOfFaith")
+        public Rest(AutonomousCharacter character) : base("Rest")
         {
             Character = character;
         }
 
         public override bool CanExecute()
         {
-            return Character.baseStats.ShieldHP < 5 && Character.baseStats.Mana >= 5;
+            return Character.baseStats.HP < Character.baseStats.MaxHP;
         }
 
         public override bool CanExecute(WorldModel worldModel)
         {
             if (!base.CanExecute(worldModel)) return false;
 
-            var currentShieldHP = (int)worldModel.GetProperty(Properties.ShieldHP);
-            var currentMana = (int)worldModel.GetProperty(Properties.MANA);
-            return currentShieldHP < 5 && currentMana >= 5;
+            var currentdHP = (int)worldModel.GetProperty(Properties.HP);
+            var MaxHP = (int)worldModel.GetProperty(Properties.MAXHP);
+            return currentdHP < MaxHP;
         }
 
         public override void Execute()
         {
-            GameManager.Instance.ShieldOfFaith();
+            GameManager.Instance.Rest();
         }
 
         public override float GetGoalChange(Goal goal)
@@ -37,7 +37,7 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel.ForwardModelActio
 
             if (goal.Name == AutonomousCharacter.SURVIVE_GOAL)
             {
-                change -= goal.InsistenceValue;
+                change -= 2;
             }
  
             return change;
@@ -47,23 +47,25 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel.ForwardModelActio
         public override void ApplyActionEffects(WorldModel worldModel)
         {
             base.ApplyActionEffects(worldModel);
-            var shieldHP = 5;
-            worldModel.SetProperty(Properties.ShieldHP, shieldHP);
 
-            int shieldHp = (int)worldModel.GetProperty(Properties.ShieldHP);
-            var surviveValue = worldModel.GetGoalValue(AutonomousCharacter.SURVIVE_GOAL);
+            var maxHP = (int)worldModel.GetProperty(Properties.MAXHP);
+            var currentHP = (int)worldModel.GetProperty(Properties.HP);
+            var surviveGoal = worldModel.GetGoalValue(AutonomousCharacter.SURVIVE_GOAL);
 
-            var mana = (int)worldModel.GetProperty(Properties.MANA);
-            worldModel.SetProperty(Properties.MANA, mana - 5);
+            var change = 0;
 
-            if(surviveValue - shieldHP < 0)
+            if (currentHP + 2 <= maxHP )
             {
-                worldModel.SetGoalValue(AutonomousCharacter.SURVIVE_GOAL, 0);
+                change = 2;
             }
-            else
+            else if (currentHP + 1 <= maxHP)
             {
-                worldModel.SetGoalValue(AutonomousCharacter.SURVIVE_GOAL, surviveValue - shieldHp);
+                change = 1;
             }
+
+            worldModel.SetProperty(Properties.HP, currentHP + change);
+            worldModel.SetGoalValue(AutonomousCharacter.SURVIVE_GOAL, surviveGoal - change);
+
         }
 
         /*public override float GetHValue(WorldModel worldModel)

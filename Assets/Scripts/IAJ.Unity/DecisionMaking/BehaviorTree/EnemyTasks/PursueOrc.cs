@@ -12,9 +12,11 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.BehaviorTree.EnemyTasks
 {
     class PursueOrc : Pursue
     {
-        private float timeToWaagh = 5f;
-        private float time = 5.1f;
+        public static float timeToWaagh = 7f;
+        private float time = timeToWaagh + 1f;
         private WAARRGGHHH scream;
+
+        private float lastUpdate = 0f;
         public PursueOrc(Monster character, GameObject target, float _range):base(character, target, _range) 
         {
             scream = new WAARRGGHHH(character as Orc, target);
@@ -23,10 +25,11 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.BehaviorTree.EnemyTasks
         public override Result Run()
         {
             time += Time.deltaTime;
-            if (time > timeToWaagh) 
+            if (time > timeToWaagh || Time.time - lastUpdate > timeToWaagh) 
             {
                 scream.Run();
                 time = 0f;
+                lastUpdate = Time.time;
             }
 
             return base.Run();

@@ -66,11 +66,9 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.BehaviorTree.BehaviourTrees
                 {
                     currentChild = 0;
                     IsOnTheHunt = false;
-                    return Result.Running;
                 }
                 return Result.Running;
             }
-
 
 
             if (currentChild != 0 && checker.Run() == Result.Success)

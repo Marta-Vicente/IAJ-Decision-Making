@@ -21,11 +21,55 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel.ForwardModelActio
             if (target.tag.Equals("Skeleton"))
             {
                 this.dmgRoll = () => RandomHelper.RollD6();
-                this.enemySimpleDamage = 3;
-                this.expectedHPChange = 3.5f;
+                this.enemySimpleDamage = 0;
+                this.expectedHPChange = 0;
                 this.xpChange = 3;
                 this.expectedXPChange = 2.7f;
                 this.enemyAC = 10;
+            }
+        }
+
+        public override void Execute()
+        {
+            base.Execute();
+            GameManager.Instance.DivineSmite(this.Target);
+        }
+
+        public override bool CanExecute()
+        {
+            return Character.baseStats.Mana >= 2 && base.CanExecute();
+        }
+
+        public override bool CanExecute(WorldModel worldModel)
+        {
+            int mana = (int)worldModel.GetProperty(Properties.MANA);
+            return mana >= 2 && base.CanExecute(worldModel);
+        }
+
+
+        public override void ApplyActionEffects(WorldModel worldModel)
+        {
+            base.ApplyActionEffects(worldModel);
+
+            int hp = (int)worldModel.GetProperty(Properties.HP);
+            int xp = (int)worldModel.GetProperty(Properties.XP);
+            int shieldHp = (int)worldModel.GetProperty(Properties.ShieldHP);
+
+            var surviveValue = worldModel.GetGoalValue(AutonomousCharacter.SURVIVE_GOAL);
+            worldModel.SetGoalValue(AutonomousCharacter.SURVIVE_GOAL, surviveValue);
+
+            worldModel.SetProperty(this.Target.name, false);
+            worldModel.SetProperty(Properties.XP, xp + this.xpChange);
+
+            var mana = (int)worldModel.GetProperty(Properties.MANA);
+            worldModel.SetProperty(Properties.MANA, mana - 2);
+
+            if (GameManager.Instance.StochasticWorld)
+            {
+                //there was an hit, enemy is destroyed, gain xp
+                //disables the target object so that it can't be reused again
+                worldModel.SetProperty(this.Target.name, false);
+                worldModel.SetProperty(Properties.XP, xp + this.xpChange);
             }
         }
 
@@ -41,41 +85,8 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel.ForwardModelActio
             {
                 change += -this.expectedXPChange;
             }
-  
+
             return change;
-        }
-
-        public override void Execute()
-        {
-            base.Execute();
-            GameManager.Instance.DivineSmite(this.Target);
-        }
-
-        public override bool CanExecute()
-        {
-            return Character.baseStats.Mana >= 2;
-        }
-
-        public override bool CanExecute(WorldModel worldModel)
-        {
-            int mana = (int)worldModel.GetProperty(Properties.MANA);
-            return mana >= 2;
-        }
-
-
-        public override void ApplyActionEffects(WorldModel worldModel)
-        {
-            base.ApplyActionEffects(worldModel);
-
-            int xp = (int)worldModel.GetProperty(Properties.XP);
-
-            int damage = int.MaxValue;
-
-            var surviveValue = worldModel.GetGoalValue(AutonomousCharacter.SURVIVE_GOAL);
-            worldModel.SetGoalValue(AutonomousCharacter.SURVIVE_GOAL, (int)worldModel.GetProperty(Properties.HP));
-
-            worldModel.SetProperty(this.Target.name, false);
-            worldModel.SetProperty(Properties.XP, xp + this.xpChange);
         }
 
         /*public override float GetHValue(WorldModel worldModel)
@@ -88,6 +99,6 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel.ForwardModelActio
             }
             return 10.0f;
         }*/
-        
+
     }
 }

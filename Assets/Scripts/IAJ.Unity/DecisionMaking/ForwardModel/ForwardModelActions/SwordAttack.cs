@@ -3,6 +3,7 @@ using Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel;
 using Assets.Scripts.IAJ.Unity.Utils;
 using System;
 using UnityEngine;
+using UnityEngine.TextCore.Text;
 
 namespace Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel.ForwardModelActions
 {
@@ -50,6 +51,8 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel.ForwardModelActio
         public override float GetGoalChange(Goal goal)
         {
             var change = base.GetGoalChange(goal);
+
+            if (expectedHPChange > Character.baseStats.HP) expectedHPChange = float.MaxValue - 10;
 
             if (goal.Name == AutonomousCharacter.SURVIVE_GOAL)
             {
@@ -113,6 +116,11 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel.ForwardModelActio
                 //disables the target object so that it can't be reused again
                 worldModel.SetProperty(this.Target.name, false);
                 worldModel.SetProperty(Properties.XP, xp + this.xpChange);
+            }
+
+            if(hp + shieldHp - damage <= 0)
+            {
+                worldModel.SetGoalValue(AutonomousCharacter.SURVIVE_GOAL, float.MaxValue - 10f);
             }
         }
 

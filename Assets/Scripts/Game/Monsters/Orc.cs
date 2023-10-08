@@ -69,10 +69,7 @@ namespace Assets.Scripts.Game.NPCs
 
         public void PlayAudio()
         {
-            if (!audioSource.isPlaying)
-            {
-                audioSource.Play();
-            }
+            audioSource.Play();
         }
 
         public void VisualizeAudio(Vector3 pos)

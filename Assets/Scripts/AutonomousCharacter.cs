@@ -5,6 +5,7 @@ using UnityEngine.AI;
 using Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel;
 using Assets.Scripts.IAJ.Unity.DecisionMaking.GOB;
 using Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel.ForwardModelActions;
+using Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS;
 using Assets.Scripts.Game;
 using Assets.Scripts.Game.NPCs;
 using Assets.Scripts.IAJ.Unity.Utils;
@@ -12,6 +13,7 @@ using Assets.Scripts.IAJ.Unity.Utils;
 
 public class AutonomousCharacter : NPC
 {
+
     //constants
     public const string SURVIVE_GOAL = "Survive";
     public const string GAIN_LEVEL_GOAL = "GainXP";
@@ -46,6 +48,7 @@ public class AutonomousCharacter : NPC
     [Header("Decision Algorithm Options")]
     public bool GOBActive;
     public bool GOAPActive;
+    public bool MTCSActive;
  
     [Header("Character Info")]
     public bool Resting = false;
@@ -62,6 +65,8 @@ public class AutonomousCharacter : NPC
     public GOBDecisionMaking GOBDecisionMaking { get; set; }
     public DepthLimitedGOAPDecisionMaking GOAPDecisionMaking { get; set; }
 
+    public MCTS MCTSDecisionMaking { get; set; }
+
     public GameObject nearEnemy { get; private set; }
 
     //private fields for internal use only
@@ -77,6 +82,7 @@ public class AutonomousCharacter : NPC
     // Draw path settings
     private LineRenderer lineRenderer;
 
+    public Vector3 initialPositon;
 
     public void Start()
     {
@@ -104,7 +110,7 @@ public class AutonomousCharacter : NPC
         //initialization of the GOB decision making
         //let's start by creating 4 main goals
 
-        this.SurviveGoal = new Goal(SURVIVE_GOAL, 10.0f);
+        this.SurviveGoal = new Goal(SURVIVE_GOAL, 5.0f);
 
         this.GainLevelGoal = new Goal(GAIN_LEVEL_GOAL, 1.0f)
         {
@@ -171,6 +177,8 @@ public class AutonomousCharacter : NPC
         //Then we have a series of extra actions available to Sir Uthgard
         this.Actions.Add(new LevelUp(this));
         this.Actions.Add(new ShieldOfFaith(this));
+        this.Actions.Add(new Rest(this));
+        this.Actions.Add(new Tp(this));
 
 
         // Initialization of Decision Making Algorithms
@@ -183,9 +191,16 @@ public class AutonomousCharacter : NPC
                 var worldModel = new CurrentStateWorldModel(GameManager.Instance, this.Actions, this.Goals);
                 this.GOAPDecisionMaking = new DepthLimitedGOAPDecisionMaking(worldModel, this.Actions, this.Goals);
             }
+            else if (this.MTCSActive)
+            {
+                var worldModel = new CurrentStateWorldModel(GameManager.Instance, this.Actions, this.Goals);
+                this.MCTSDecisionMaking = new MCTS(worldModel);
+            }
         }
 
-        DiaryText.text += "My Diary \n I awoke. What a wonderful day to kill Monsters! \n";
+        this.initialPositon = gameObject.transform.position;
+
+        DiaryText.text += "My Diary \n I awoke, AND I CHOOSE FUCKING VIOLENCE TODAY. What a wonderful day to kill Monsters! \n";
     }
 
     void FixedUpdate()
@@ -256,7 +271,11 @@ public class AutonomousCharacter : NPC
             }
             else if (GOAPActive)  //Add here other Algorithms...
             {
-                    this.GOAPDecisionMaking.InitializeDecisionMakingProcess();
+                 this.GOAPDecisionMaking.InitializeDecisionMakingProcess();
+            }
+            else if (MTCSActive)
+            {
+                this.MCTSDecisionMaking.InitializeMCTSearch();
             }
         }
 
@@ -297,12 +316,15 @@ public class AutonomousCharacter : NPC
         {
             this.UpdateGOB();
         }
+        else if (this.MTCSActive)
+        {
+            this.UpdateMCTS();
+        }
 
         if (this.CurrentAction != null)
         {
             if (this.CurrentAction.CanExecute())
             {
-
                 this.CurrentAction.Execute();
             }
 
@@ -359,23 +381,32 @@ public class AutonomousCharacter : NPC
                 if (newDecision)
                 {
                     var bestDiscont = this.GOBDecisionMaking.ActionDiscontentment[action];
+                    float secondBestDiscont = 0;
+                    float thirdBestDiscont = 0;
                     Action secondBestAction = this.GOBDecisionMaking.secondBestAction;
-                    var secondBestDiscont = this.GOBDecisionMaking.ActionDiscontentment[secondBestAction];
+                    if (secondBestAction != null)
+                        secondBestDiscont = this.GOBDecisionMaking.ActionDiscontentment[secondBestAction];
                     Action thirdBestAction = this.GOBDecisionMaking.thirdBestAction;
-                    var thirdBestDiscont = this.GOBDecisionMaking.ActionDiscontentment[thirdBestAction];
+                    if(thirdBestAction != null)
+                        thirdBestDiscont = this.GOBDecisionMaking.ActionDiscontentment[thirdBestAction];
+
                     AddToDiary(" I decided to " + action.Name);
                     this.BestActionText.text = "Best Action: " + action.Name + ":" + bestDiscont.ToString("F2") + "\n";
-                    this.BestActionSequence.text = " Second Best:" + secondBestAction.Name + ":" + secondBestDiscont.ToString("F2") + "\n"
-                        + " Third Best:" + thirdBestAction.Name + ":" + thirdBestDiscont.ToString("F2") + "\n";
+                    if(secondBestAction != null)
+                        this.BestActionSequence.text = " Second Best:" + secondBestAction.Name + ":" + secondBestDiscont.ToString("F2") + "\n";
+                    else
+                        this.BestActionSequence.text = " --------------------- ";
+                    if (thirdBestAction != null)
+                        this.BestActionSequence.text += " Third Best:" + thirdBestAction.Name + ":" + thirdBestDiscont.ToString("F2") + "\n";
+                    else
+                        this.BestActionSequence.text = " --------------------- ";
                 }
 
             }
 
         }
-
         this.TotalProcessingTimeText.text = "Process. Time: " + this.GOBDecisionMaking.TotalProcessingTime.ToString("F");
         this.BestDiscontentmentText.text = "Best Discontentment: " + GOBDecisionMaking.BestDiscontentmentValue.ToString("F");
-
     }
 
     private void UpdateDLGOAP()
@@ -417,12 +448,11 @@ public class AutonomousCharacter : NPC
         }
     }
 
-/*    private void UpdateMCTS()
+    private void UpdateMCTS()
     {
         if (this.MCTSDecisionMaking.InProgress)
         {
-            var action = this.MCTSDecisionMaking.Run();
-            if (action != null)
+            var action = this.MCTSDecisionMaking.ChooseAction();
             {
                 this.CurrentAction = action;
                 AddToDiary(" I decided to " + action.Name);
@@ -463,7 +493,7 @@ public class AutonomousCharacter : NPC
             this.BestActionSequence.text = "Best Action Sequence:\nNone";
             this.BestActionText.text = "";
         }
-    }*/
+    }
 
 
     void DrawPath()
