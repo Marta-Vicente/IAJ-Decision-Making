@@ -188,7 +188,23 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
         protected virtual MCTSNode BestUCTChild(MCTSNode node)
         {
             //ToDo
-            return null;
+            //return null;
+
+            MCTSNode bestChild = node.ChildNodes[0];
+            float bestValue = 0;
+
+            foreach (MCTSNode child in node.ChildNodes)
+            {
+                var estimatedValue = child.Q / child.N;
+                var uctValue = estimatedValue + C * Math.Sqrt(Math.Log(node.N) / child.N);
+
+                if (child.N > 0 && uctValue > bestValue)
+                {
+                    bestChild = child;
+                    bestValue = (float)uctValue;
+                }
+            }
+            return bestChild;
         }
 
         //this method is very similar to the bestUCTChild, but it is used to return the final action of the MCTS search, and so we do not care about
