@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Action = Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel.Action;
 using UnityEditor.Experimental.GraphView;
+using System.Linq;
 
 namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
 {
@@ -35,6 +36,12 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
         public WorldModel BestActionSequenceWorldState;
 
 
+        //Debug
+        /*
+        public bool doOnce = true;
+        public int doOnceCounter = 0;
+        */
+
         public MCTS(CurrentStateWorldModel currentStateWorldModel)
         {
             this.InProgress = false;
@@ -43,17 +50,17 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
             this.MaxIterationsPerFrame = 100;
             this.RandomGenerator = new System.Random();
             this.InitialState = currentStateWorldModel;
+            this.TotalProcessingTime = 0;
         }
 
 
         public void InitializeMCTSearch()
         {
             this.InitialState.Initialize();
-            this.MaxPlayoutDepthReached = 0;
-            this.MaxSelectionDepthReached = 0;
+            //this.MaxPlayoutDepthReached = 0;
+            //this.MaxSelectionDepthReached = 0;
             this.CurrentIterations = 0;
             this.CurrentIterationsInFrame = 0;
-            this.TotalProcessingTime = 0.0f;
  
             // create root node n0 for state s0
             this.InitialNode = new MCTSNode(this.InitialState)
@@ -73,17 +80,17 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
             MCTSNode selectedNode;
             float reward;
 
-            var startTime = Time.realtimeSinceStartup;
-
-            int i = 50;
+            int i = this.MaxIterations;
             while(i > 0)
             {
                 var node1 = Selection(InitialNode);
-                reward = Playout(node1.State);
+                var node1Copy = node1.State.GenerateChildWorldModel();
+                reward = Playout(node1Copy);
                 Backpropagate(node1, reward);
                 i--;
             }
 
+            this.TotalProcessingTime += Time.deltaTime;
             return BestAction(InitialNode);
         }
 
@@ -94,24 +101,33 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
             MCTSNode currentNode = initialNode;
             MCTSNode bestChild;
 
+            var currentDepth = 0;
+
             while (!currentNode.State.IsTerminal())
             {
                 nextAction = currentNode.State.GetNextAction();
-                if (currentNode.ChildNodes.Count == 0)
+
+                if (nextAction != null)
                 {
+                    if (currentDepth > this.MaxSelectionDepthReached) this.MaxSelectionDepthReached = currentDepth;
                     return Expand(currentNode, nextAction);
                 }
                 else
                 {
-                    currentNode = BestChild(currentNode);
+                    bestChild = BestChild(currentNode);
+                    if(bestChild != null)
+                    {
+                        currentNode = bestChild;
+                    }
+                    else
+                    {
+                        return currentNode;
+                    }
                 }
+                currentDepth++;
             }
 
-            //   while(!currentNode.State.IsTerminal())
-
-                // nextAction = currentNode.State.GetNextAction();
-
-                //Expansion
+            if(currentDepth > this.MaxSelectionDepthReached) this.MaxSelectionDepthReached = currentDepth;
 
             return currentNode;
         }
@@ -120,12 +136,16 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
         {
             Action[] executableActions;
 
+            var currentDepth = 0;
             while (!initialStateForPlayout.IsTerminal())
             {
                 executableActions = initialStateForPlayout.GetExecutableActions();
                 var ActionNumber = RandomGenerator.Next(executableActions.Length);
                 executableActions[ActionNumber].ApplyActionEffects(initialStateForPlayout);
+                currentDepth++;
             }
+
+            if(currentDepth > this.MaxPlayoutDepthReached) this.MaxPlayoutDepthReached = currentDepth;
 
             return initialStateForPlayout.GetScore();
         }
@@ -133,13 +153,13 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
         protected virtual void Backpropagate(MCTSNode node, float reward)
         {
             //ToDo, do not forget to later consider two advesary moves...
-
             while(node != null)
             {
                 node.N += 1;
                 node.Q += reward /* plus utc stuff */;
                 node = node.Parent;
             }
+
         }
 
         protected MCTSNode Expand(MCTSNode parent, Action action)
@@ -151,6 +171,8 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
             MCTSNode child = new MCTSNode(newState);
 
             child.Action = action;
+
+            child.Parent = parent;
 
             parent.ChildNodes.Add(child);
 

@@ -47,7 +47,7 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel.ForwardModelActio
         public override void ApplyActionEffects(WorldModel worldModel)
         {
             base.ApplyActionEffects(worldModel);
-            var maxMana = (int)worldModel.GetProperty(Properties.MAXMANA);
+            var maxMana = 10;
             worldModel.SetProperty(Properties.MANA, maxMana);
             worldModel.SetGoalValue(AutonomousCharacter.SURVIVE_GOAL, 0.0f);
 

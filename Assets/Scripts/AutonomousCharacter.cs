@@ -200,7 +200,7 @@ public class AutonomousCharacter : NPC
 
         this.initialPositon = gameObject.transform.position;
 
-        DiaryText.text += "My Diary \n I awoke, AND I CHOOSE FUCKING VIOLENCE TODAY. What a wonderful day to kill Monsters! \n";
+        DiaryText.text += "My Diary \n I awoke, AND I CHOOSE F@CK#NG VIOLENCE TODAY. What a wonderful day to kill Monsters! \n";
     }
 
     void FixedUpdate()
@@ -327,14 +327,11 @@ public class AutonomousCharacter : NPC
             {
                 this.CurrentAction.Execute();
             }
-
-
         }
 
         if (navMeshAgent.hasPath)
         {
             DrawPath();
-
         }
            
 
@@ -465,13 +462,16 @@ public class AutonomousCharacter : NPC
         // Statistical and Debug data
         this.TotalProcessingTimeText.text = "Process. Time: " + this.MCTSDecisionMaking.TotalProcessingTime.ToString("F");
 
-        this.ProcessedActionsText.text = "Max Depth: " + this.MCTSDecisionMaking.MaxPlayoutDepthReached.ToString();
+        //this.ProcessedActionsText.text = "Max Depth: " + this.MCTSDecisionMaking.MaxPlayoutDepthReached.ToString() + "\n";
+
+        this.ProcessedActionsText.text = "Max Depth Selection" + this.MCTSDecisionMaking.MaxSelectionDepthReached.ToString();
 
         if (this.MCTSDecisionMaking.BestFirstChild != null)
         {
             var q = this.MCTSDecisionMaking.BestFirstChild.Q / this.MCTSDecisionMaking.BestFirstChild.N;
             this.BestDiscontentmentText.text = "Best Exp. Q value: " + q.ToString("F05");
             var actionText = "";
+
             foreach (var action in this.MCTSDecisionMaking.BestActionSequence)
             {
                 actionText += "\n" + action.Name;

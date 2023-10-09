@@ -2,6 +2,7 @@
 using Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Threading;
 
 namespace Assets.Scripts.Game
 {
@@ -33,6 +34,13 @@ namespace Assets.Scripts.Game
             int HP = (int)this.GetProperty(Properties.HP);
             float time = (float)this.GetProperty(Properties.TIME);
             int money = (int)this.GetProperty(Properties.MONEY);
+
+            /*
+            if (money == 25) {
+                Debug.Log("Chests: " + money + " " + "Hp: " + HP + " Time" + time + " res:" +
+                    (HP <= 0 || time >= GameManager.GameConstants.TIME_LIMIT || (this.NextPlayer == 0 && money == 25)));
+                }
+            */
 
             return HP <= 0 ||  time >= GameManager.GameConstants.TIME_LIMIT || (this.NextPlayer == 0 && money == 25);
         }

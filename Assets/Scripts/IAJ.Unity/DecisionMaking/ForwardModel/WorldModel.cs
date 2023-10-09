@@ -16,6 +16,8 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel
 
         protected WorldModel Parent { get; set; }
 
+        public int nextIndex = 0;
+
         public WorldModel(List<Action> actions)
         {
             this.Properties = new Dictionary<string, object>();
@@ -133,6 +135,17 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel
             return action;
         }
 
+        public virtual Action GetNextActionButThisOneMightWork()
+        {
+            Action action = null;
+            if (nextIndex < this.GetExecutableActions().Count())
+            {
+                action = this.GetExecutableActions()[nextIndex];
+                nextIndex++;
+            }
+            return action;
+        }
+
         public virtual Action[] GetExecutableActions()
         {
             return this.Actions.Where(a => a.CanExecute(this)).ToArray();
@@ -183,6 +196,21 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel
         public Dictionary<string, object> getD()
         {
             return this.Properties;
+        }
+
+        public int getActionNumber()
+        {
+            return this.Actions.Count;
+        }
+
+        public IEnumerator<Action> GetEnumeratorMine()
+        {
+            return this.ActionEnumerator;
+        }
+
+        public List<Action> getAction()
+        {
+            return this.Actions;
         }
     }
 }
