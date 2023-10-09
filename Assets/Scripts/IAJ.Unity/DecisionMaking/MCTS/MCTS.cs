@@ -84,10 +84,14 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
             while(i > 0)
             {
                 var node1 = Selection(InitialNode);
-                var node1Copy = node1.State.GenerateChildWorldModel();
-                reward = Playout(node1Copy);
-                Backpropagate(node1, reward);
-                i--;
+                for(int j=0; j < 10; j++)
+                {
+                    var node1Copy = node1.State.GenerateChildWorldModel();
+                    reward = Playout(node1Copy);
+                    Backpropagate(node1, reward);
+                    i--;
+                }
+                
             }
 
             this.TotalProcessingTime += Time.deltaTime;
@@ -167,6 +171,8 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
             WorldModel newState = parent.State.GenerateChildWorldModel();
 
             action.ApplyActionEffects(newState);
+
+            newState.CalculateNextPlayer();
 
             MCTSNode child = new MCTSNode(newState);
 
