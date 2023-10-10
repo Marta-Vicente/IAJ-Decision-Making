@@ -60,13 +60,13 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel.ForwardModelActio
 
         }
 
-        /*public override float GetHValue(WorldModel worldModel)
+        public override float GetHValue(WorldModel worldModel)
         {
             var currentHP = (int)worldModel.GetProperty(Properties.HP);
             var maxHP = (int)worldModel.GetProperty(Properties.MAXHP);
 
             return (currentHP / maxHP) + base.GetHValue(worldModel);
         }
-        */
+        
     }
 }

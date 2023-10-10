@@ -84,5 +84,10 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel.ForwardModelActio
             var distance = this.Character.GetDistanceToTarget(currentPosition, targetPosition);
             return distance;
         }
+
+        public override float GetHValue(WorldModel worldModel)
+        {
+            return GetDuration()/150f;
+        }
     }
 }

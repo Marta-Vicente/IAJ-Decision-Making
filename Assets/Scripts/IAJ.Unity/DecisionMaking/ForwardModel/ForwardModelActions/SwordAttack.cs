@@ -127,10 +127,12 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel.ForwardModelActio
         public override float GetHValue(WorldModel worldModel)
         {
             var hp = (int)worldModel.GetProperty(Properties.HP);
-            
-            if (hp > this.expectedHPChange)
+            var shield = (int)worldModel.GetProperty(Properties.ShieldHP);
+            float time = (float)worldModel.GetProperty(Properties.TIME);
+
+            if (hp + shield > this.enemySimpleDamage)
             {
-                return base.GetHValue(worldModel)/1.5f;
+                return base.GetHValue(worldModel)/1.5f + (time/150f)*3;
             }
             return 10.0f;
         }

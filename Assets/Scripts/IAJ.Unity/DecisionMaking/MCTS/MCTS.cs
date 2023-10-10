@@ -16,7 +16,7 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
         public bool InProgress { get; private set; }
         public int MaxIterations { get; set; }
         public int MaxIterationsPerFrame { get; set; }
-        public int MaxPlayoutDepthReached { get; private set; }
+        public int MaxPlayoutDepthReached { get; protected set; }
         public int MaxSelectionDepthReached { get; private set; }
         public float TotalProcessingTime { get; private set; }
         public MCTSNode BestFirstChild { get; set; }
@@ -46,7 +46,7 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
         {
             this.InProgress = false;
             this.CurrentStateWorldModel = currentStateWorldModel;
-            this.MaxIterations = 1000;
+            this.MaxIterations = 500;
             this.MaxIterationsPerFrame = 100;
             this.RandomGenerator = new System.Random();
             this.InitialState = currentStateWorldModel;
@@ -221,6 +221,8 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
                     bestValue = child.Q / child.N;
                 }
             }
+
+            //Debug.Log(bestChild.Q + "/" + bestChild.N);
             return bestChild;
         }
 

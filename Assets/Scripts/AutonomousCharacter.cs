@@ -49,6 +49,7 @@ public class AutonomousCharacter : NPC
     public bool GOBActive;
     public bool GOAPActive;
     public bool MTCSActive;
+    public bool MTCSBiasActive;
  
     [Header("Character Info")]
     public bool Resting = false;
@@ -66,6 +67,7 @@ public class AutonomousCharacter : NPC
     public DepthLimitedGOAPDecisionMaking GOAPDecisionMaking { get; set; }
 
     public MCTS MCTSDecisionMaking { get; set; }
+    public MCTSBiasedPlayout MCTSDecisionMakingBiasedPlayout { get; set; }
 
     public GameObject nearEnemy { get; private set; }
 
@@ -153,7 +155,7 @@ public class AutonomousCharacter : NPC
         {
             this.Actions.Add(new SwordAttack(this, enemy));
         }
-
+        
         foreach (var enemy in GameObject.FindGameObjectsWithTag("Dragon"))
         {
             this.Actions.Add(new SwordAttack(this, enemy));
@@ -173,13 +175,13 @@ public class AutonomousCharacter : NPC
         {
             this.Actions.Add(new GetManaPotion(this, potion));
         }
+        
 
         //Then we have a series of extra actions available to Sir Uthgard
         this.Actions.Add(new LevelUp(this));
         this.Actions.Add(new ShieldOfFaith(this));
         this.Actions.Add(new Rest(this));
         this.Actions.Add(new Tp(this));
-
 
         // Initialization of Decision Making Algorithms
         if (!this.controlledByPlayer)
@@ -195,6 +197,11 @@ public class AutonomousCharacter : NPC
             {
                 var worldModel = new CurrentStateWorldModel(GameManager.Instance, this.Actions, this.Goals);
                 this.MCTSDecisionMaking = new MCTS(worldModel);
+            }
+            else if (this.MTCSBiasActive)
+            {
+                var worldModel = new CurrentStateWorldModel(GameManager.Instance, this.Actions, this.Goals);
+                this.MCTSDecisionMakingBiasedPlayout = new MCTSBiasedPlayout(worldModel);
             }
         }
 
@@ -277,6 +284,10 @@ public class AutonomousCharacter : NPC
             {
                 this.MCTSDecisionMaking.InitializeMCTSearch();
             }
+            else if(MTCSBiasActive)
+            {
+                this.MCTSDecisionMakingBiasedPlayout.InitializeMCTSearch();
+            }
         }
 
         if (this.controlledByPlayer)
@@ -319,6 +330,10 @@ public class AutonomousCharacter : NPC
         else if (this.MTCSActive)
         {
             this.UpdateMCTS();
+        }
+        else if (this.MTCSBiasActive) 
+        {
+            this.UpdateMCTSBias();
         }
 
         if (this.CurrentAction != null)
@@ -462,9 +477,9 @@ public class AutonomousCharacter : NPC
         // Statistical and Debug data
         this.TotalProcessingTimeText.text = "Process. Time: " + this.MCTSDecisionMaking.TotalProcessingTime.ToString("F");
 
-        //this.ProcessedActionsText.text = "Max Depth: " + this.MCTSDecisionMaking.MaxPlayoutDepthReached.ToString() + "\n";
+        this.ProcessedActionsText.text = "Max Depth: " + this.MCTSDecisionMaking.MaxPlayoutDepthReached.ToString() + "\n";
 
-        this.ProcessedActionsText.text = "Max Depth Selection" + this.MCTSDecisionMaking.MaxSelectionDepthReached.ToString();
+        //this.ProcessedActionsText.text = "Max Depth Selection" + this.MCTSDecisionMaking.MaxSelectionDepthReached.ToString();
 
         if (this.MCTSDecisionMaking.BestFirstChild != null)
         {
@@ -499,6 +514,59 @@ public class AutonomousCharacter : NPC
         }
     }
 
+    private void UpdateMCTSBias()
+    {
+        bool newDecision = false;
+        if (this.MCTSDecisionMakingBiasedPlayout.InProgress)
+        {
+            var action = this.MCTSDecisionMakingBiasedPlayout.ChooseAction();
+
+            if (this.CurrentAction != null && !this.CurrentAction.Equals(action)) newDecision = true;
+
+            this.CurrentAction = action;
+
+            if (newDecision)
+                AddToDiary(" I decided to " + action.Name);
+        }
+        // Statistical and Debug data
+        this.TotalProcessingTimeText.text = "Process. Time: " + this.MCTSDecisionMakingBiasedPlayout.TotalProcessingTime.ToString("F");
+
+        this.ProcessedActionsText.text = "Max Depth: " + this.MCTSDecisionMakingBiasedPlayout.MaxPlayoutDepthReached.ToString() + "\n";
+
+        //this.ProcessedActionsText.text = "Max Depth Selection" + this.MCTSDecisionMakingBiasedPlayout.MaxSelectionDepthReached.ToString();
+
+        if (this.MCTSDecisionMakingBiasedPlayout.BestFirstChild != null)
+        {
+            var q = this.MCTSDecisionMakingBiasedPlayout.BestFirstChild.Q / this.MCTSDecisionMakingBiasedPlayout.BestFirstChild.N;
+            this.BestDiscontentmentText.text = "Best Exp. Q value: " + q.ToString("F05");
+            var actionText = "";
+
+            foreach (var action in this.MCTSDecisionMakingBiasedPlayout.BestActionSequence)
+            {
+                actionText += "\n" + action.Name;
+            }
+            this.BestActionSequence.text = "Best Action Sequence: " + actionText;
+
+            //Debug: What is the predicted state of the world?
+            var endState = MCTSDecisionMakingBiasedPlayout.BestActionSequenceWorldState;
+            var text = "";
+            if (endState != null)
+            {
+                text += "Predicted World State:\n";
+                text += "My Level:" + endState.GetProperty(Properties.LEVEL) + "\n";
+                text += "My HP:" + endState.GetProperty(Properties.HP) + "\n";
+                text += "My Money:" + endState.GetProperty(Properties.MONEY) + "\n";
+                text += "Time Passsed:" + endState.GetProperty(Properties.TIME) + "\n";
+                this.BestActionText.text = text;
+            }
+            else this.BestActionText.text = "No EndState was found";
+        }
+        else
+        {
+            this.BestActionSequence.text = "Best Action Sequence:\nNone";
+            this.BestActionText.text = "";
+        }
+    }
 
     void DrawPath()
     {

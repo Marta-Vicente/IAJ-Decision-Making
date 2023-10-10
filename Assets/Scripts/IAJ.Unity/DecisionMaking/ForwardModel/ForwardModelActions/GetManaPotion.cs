@@ -56,12 +56,12 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel.ForwardModelActio
         }
 
 
-        /*public override float GetHValue(WorldModel worldModel)
+        public override float GetHValue(WorldModel worldModel)
         {
-            var currentHP = (int)worldModel.GetProperty(Properties.HP);
-            var maxHP = (int)worldModel.GetProperty(Properties.MAXHP);
+            var currentMana = (int)worldModel.GetProperty(Properties.MANA);
+            float time = (float)worldModel.GetProperty(Properties.TIME);
 
-            return (currentHP / maxHP) + base.GetHValue(worldModel);
-        }*/
+            return (currentMana / 10) + base.GetHValue(worldModel) + (time/150)*3;
+        }
     }
 }
