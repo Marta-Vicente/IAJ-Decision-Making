@@ -16,7 +16,7 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
 
         public MCTSBiasedPlayout(CurrentStateWorldModel currentStateWorldModel) : base(currentStateWorldModel)
         {
-            this.MaxIterations = 500;
+            this.MaxIterations = 5000;
             this.MaxPlayoutsPerNode = 1;
         }
 

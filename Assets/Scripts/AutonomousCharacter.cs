@@ -221,6 +221,7 @@ public class AutonomousCharacter : NPC
             GameObject enemy = CheckEnemies(ENEMY_DETECTION_RADIUS);
             if (enemy != null)
             {
+                //HERE WHEN ENEMY IN FRONT RECALCULET ALL, Ping pong effect
                 GameManager.Instance.WorldChanged = true;
                 AddToDiary(" There is " + enemy.name + " in front of me!");
                 this.nearEnemy = enemy;
@@ -234,7 +235,6 @@ public class AutonomousCharacter : NPC
 
         if (Time.time > this.nextUpdateTime || GameManager.Instance.WorldChanged)
         {
-
             GameManager.Instance.WorldChanged = false;
             this.nextUpdateTime = Time.time + DECISION_MAKING_INTERVAL;
             var duration = Time.time - this.lastUpdateTime;
@@ -463,6 +463,7 @@ public class AutonomousCharacter : NPC
     private void UpdateMCTS()
     {
         bool newDecision = false;
+        /*
         if (this.MCTSDecisionMaking.InProgress)
         {
             var action = this.MCTSDecisionMaking.ChooseAction();
@@ -474,6 +475,18 @@ public class AutonomousCharacter : NPC
             if (newDecision)
                 AddToDiary(" I decided to " + action.Name);
         }
+        */
+
+        if (this.MCTSDecisionMaking.InProgress)
+        {
+            if (this.CurrentAction == null)
+            {
+                var action = this.MCTSDecisionMaking.ChooseAction();
+                this.CurrentAction = action;
+                AddToDiary(" I decided to " + action.Name);
+            }
+        }
+
         // Statistical and Debug data
         this.TotalProcessingTimeText.text = "Process. Time: " + this.MCTSDecisionMaking.TotalProcessingTime.ToString("F");
 
@@ -520,6 +533,13 @@ public class AutonomousCharacter : NPC
         bool newDecision = false;
         if (this.MCTSDecisionMakingBiasedPlayout.InProgress)
         {
+            if(this.CurrentAction == null)
+            {
+                var action = this.MCTSDecisionMakingBiasedPlayout.ChooseAction();
+                this.CurrentAction = action;
+                AddToDiary(" I decided to " + action.Name);
+            }
+            /*
             var action = this.MCTSDecisionMakingBiasedPlayout.ChooseAction();
 
             if (this.CurrentAction != null && !this.CurrentAction.Equals(action)) newDecision = true;
@@ -528,6 +548,7 @@ public class AutonomousCharacter : NPC
 
             if (newDecision)
                 AddToDiary(" I decided to " + action.Name);
+            */
         }
         // Statistical and Debug data
         this.TotalProcessingTimeText.text = "Process. Time: " + this.MCTSDecisionMakingBiasedPlayout.TotalProcessingTime.ToString("F");
