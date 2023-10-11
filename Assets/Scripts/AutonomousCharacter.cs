@@ -20,7 +20,7 @@ public class AutonomousCharacter : NPC
     public const string BE_QUICK_GOAL = "BeQuick";
     public const string GET_RICH_GOAL = "GetRich";
 
-    public const float DECISION_MAKING_INTERVAL = 20.0f;
+    public const float DECISION_MAKING_INTERVAL = 40.0f;// HERE! 20.0f
     public const float RESTING_INTERVAL = 5.0f;
     public const float LEVELING_INTERVAL = 10.0f;
     public const float ENEMY_NEAR_CHECK_INTERVAL = 0.5f;
@@ -145,6 +145,7 @@ public class AutonomousCharacter : NPC
         this.Actions = new List<Action>();
 
         //First it is necessary to add the actions made available by the elements in the scene
+        
         foreach (var enemy in GameObject.FindGameObjectsWithTag("Skeleton"))
         {
             this.Actions.Add(new SwordAttack(this, enemy));
@@ -233,7 +234,6 @@ public class AutonomousCharacter : NPC
 
         if (Time.time > this.nextUpdateTime || GameManager.Instance.WorldChanged)
         {
-
 
             GameManager.Instance.WorldChanged = false;
             this.nextUpdateTime = Time.time + DECISION_MAKING_INTERVAL;
@@ -484,7 +484,8 @@ public class AutonomousCharacter : NPC
         if (this.MCTSDecisionMaking.BestFirstChild != null)
         {
             var q = this.MCTSDecisionMaking.BestFirstChild.Q / this.MCTSDecisionMaking.BestFirstChild.N;
-            this.BestDiscontentmentText.text = "Best Exp. Q value: " + q.ToString("F05");
+            this.BestDiscontentmentText.text = "Best Exp. Q value: " + q.ToString("F05") + "\n" 
+                                                + "Total Q/N = " + this.MCTSDecisionMaking.TotalQ + "/" + this.MCTSDecisionMaking.TotalN;
             var actionText = "";
 
             foreach (var action in this.MCTSDecisionMaking.BestActionSequence)
@@ -538,7 +539,8 @@ public class AutonomousCharacter : NPC
         if (this.MCTSDecisionMakingBiasedPlayout.BestFirstChild != null)
         {
             var q = this.MCTSDecisionMakingBiasedPlayout.BestFirstChild.Q / this.MCTSDecisionMakingBiasedPlayout.BestFirstChild.N;
-            this.BestDiscontentmentText.text = "Best Exp. Q value: " + q.ToString("F05");
+            this.BestDiscontentmentText.text = "Best Exp. Q value: " + q.ToString("F05") + "\n"
+                                                + "Total Q/N = " + this.MCTSDecisionMakingBiasedPlayout.TotalQ + "/" + this.MCTSDecisionMakingBiasedPlayout.TotalN;
             var actionText = "";
 
             foreach (var action in this.MCTSDecisionMakingBiasedPlayout.BestActionSequence)

@@ -91,8 +91,10 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel.ForwardModelActio
 
         public override float GetHValue(WorldModel worldModel)
         {
-            float time = (float) worldModel.GetProperty(Properties.TIME);
-            return GetHValue(worldModel) + (time/150f)*3;
+            //float time = (float) worldModel.GetProperty(Properties.TIME);
+            //return GetHValue(worldModel);// + (time/150f)*3;
+            //somehow it fucks here???
+            return 1f;
         }
 
     }

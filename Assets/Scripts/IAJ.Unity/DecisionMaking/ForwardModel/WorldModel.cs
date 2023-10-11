@@ -39,7 +39,6 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel
 
         public virtual object GetProperty(string propertyName)
         {
-            //recursive implementation of WorldModel
             if (this.Properties.ContainsKey(propertyName))
             {
                 return this.Properties[propertyName];
@@ -52,6 +51,7 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel
             {
                 return null;
             }
+
         }
 
         public virtual void SetProperty(string propertyName, object value)

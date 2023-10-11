@@ -17,6 +17,7 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
         public MCTSBiasedPlayout(CurrentStateWorldModel currentStateWorldModel) : base(currentStateWorldModel)
         {
             this.MaxIterations = 500;
+            this.MaxPlayoutsPerNode = 1;
         }
 
         // Selection and Expantion
@@ -29,7 +30,8 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
             while (!initialStateForPlayout.IsTerminal())
             {
                 executableActions = initialStateForPlayout.GetExecutableActions();
-                GetBestActionH(executableActions, initialStateForPlayout).ApplyActionEffects(initialStateForPlayout);
+                var actionPicked = GetBestActionH(executableActions, initialStateForPlayout);
+                actionPicked.ApplyActionEffects(initialStateForPlayout);
                 currentDepth++;
             }
 
@@ -38,7 +40,7 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
             return initialStateForPlayout.GetScore();
         }
 
-        /*
+        
         private Action GetBestActionH(Action[] actions, WorldModel worldModel)
         {
             var largertH = 0f;
@@ -57,7 +59,7 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
 
                 //Everyone gets a chance
                 if(biasValue > 10) biasValue = 10;
-                if(biasValue < 1) biasValue = 1;
+                else if(biasValue < 2) biasValue = 0;
 
                 bestActionsPair.Add(new Pair<Action, int>(actions[i], biasValue));
             }
@@ -74,13 +76,14 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
 
             return biasActions[ActionNumber];
         }
-        */
-
+        
+        /*
         private Action GetBestActionH(Action[] actions, WorldModel worldModel)
         {
-            var bestH = float.MaxValue;
+            var bestH = 1000f;
             if (actions[0] == null) return null;
 
+            
             var bestAction = actions[0];
             for (int i = 0; i < actions.Length; i++)
             {
@@ -88,10 +91,11 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
                 {
                     bestH = actions[i].GetHValue(worldModel);
                     bestAction = actions[i];
-                }
-            }
+                }  
+            }    
 
             return bestAction;
         }
+        */
     }
 }

@@ -35,6 +35,11 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
 
         public WorldModel BestActionSequenceWorldState;
 
+        public int TotalQ { get; set; }
+        public int TotalN { get; set; }
+
+        public int MaxPlayoutsPerNode { get; set; }
+
 
         //Debug
         /*
@@ -46,7 +51,8 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
         {
             this.InProgress = false;
             this.CurrentStateWorldModel = currentStateWorldModel;
-            this.MaxIterations = 500;
+            this.MaxIterations = 2500;
+            this.MaxPlayoutsPerNode = 1;
             this.MaxIterationsPerFrame = 100;
             this.RandomGenerator = new System.Random();
             this.InitialState = currentStateWorldModel;
@@ -61,6 +67,9 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
             //this.MaxSelectionDepthReached = 0;
             this.CurrentIterations = 0;
             this.CurrentIterationsInFrame = 0;
+
+            this.TotalN = 0;
+            this.TotalQ = 0;
  
             // create root node n0 for state s0
             this.InitialNode = new MCTSNode(this.InitialState)
@@ -72,6 +81,8 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
             this.InProgress = true;
             this.BestFirstChild = null;
             this.BestActionSequence = new List<Action>();
+
+            if (this.MaxPlayoutsPerNode == 0) this.MaxPlayoutsPerNode = 1;
         }
 
         public Action ChooseAction()
@@ -84,18 +95,21 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
             while(i > 0)
             {
                 var node1 = Selection(InitialNode);
-                for(int j=0; j < 10; j++)
+                for(int j=0; j < this.MaxPlayoutsPerNode; j++)
                 {
                     var node1Copy = node1.State.GenerateChildWorldModel();
                     reward = Playout(node1Copy);
                     Backpropagate(node1, reward);
-                    i--;
                 }
-                
+                i--;
+
             }
 
             this.TotalProcessingTime += Time.deltaTime;
+            this.InProgress = false;
+          
             return BestAction(InitialNode);
+           
         }
 
         // Selection and Expantion
@@ -162,6 +176,9 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
                 node.N += 1;
                 node.Q += reward /* plus utc stuff */;
                 node = node.Parent;
+
+                this.TotalN += 1;
+                this.TotalQ += (int) reward;
             }
 
         }
@@ -211,6 +228,7 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
         //the exploration factor
         protected MCTSNode BestChild(MCTSNode node)
         {
+            if(node.ChildNodes.Count == 0) return null;
             MCTSNode bestChild = node.ChildNodes[0];
             float bestValue = 0;
             foreach (MCTSNode child in node.ChildNodes)
