@@ -70,26 +70,28 @@ public class GameManager : MonoBehaviour
 
         this.initialPosition = this.Character.gameObject.transform.position;
 
-        /*
+        
         var monster3 = orcs[3];
         var monster4 = orcs[4];
         var monster5 = orcs[5];
-        monster5.GetComponent<Orc>().usingFormation = true;
-        monster4.GetComponent<Orc>().usingFormation = true;
-        monster3.GetComponent<Orc>().usingFormation = true;
         var lineForm = new LineFormation();
-
-        this.Formations = new List<FormationManager>()
-        {
-            new FormationManager(new List<Monster>
+        var lineFormationManager = new FormationManager(new List<Monster>
             {
                 monster5.GetComponent<Orc>(),
                 monster3.GetComponent<Orc>(),
                 monster4.GetComponent<Orc>()
 
-            }, lineForm, monster5.transform.position, new Vector3(0,0,0))
+            }, lineForm, monster5.transform.position, monster5.transform.forward);
+
+        lineFormationManager.AddCharacter(monster5.GetComponent<Orc>());
+        lineFormationManager.AddCharacter(monster3.GetComponent<Orc>());
+        lineFormationManager.AddCharacter(monster4.GetComponent<Orc>());
+
+        this.Formations = new List<FormationManager>()
+        {
+            lineFormationManager
         };
-        */
+        
     }
 
     public void UpdateDisposableObjects()
@@ -177,12 +179,12 @@ public class GameManager : MonoBehaviour
                 this.GameEnd.GetComponentInChildren<Text>().text = "Victory \n GG EZ";
             }
 
-            /*
+            
             foreach(var fm in Formations)
             {
                 fm.UpdateSlots();
             }
-            */
+            
         }
     }
 
@@ -195,12 +197,13 @@ public class GameManager : MonoBehaviour
         if (enemy != null && enemy.activeSelf && InMeleeRange(enemy))
         {
             this.Character.AddToDiary(" I Sword Attacked " + enemy.name);
-            /*
+            
             foreach (var fm in Formations)
             {
+                fm.RemoveCharacter(enemy.GetComponent<Orc>());
                 fm.SlotAssignment.Remove(enemy.GetComponent<Orc>());
             }
-            */
+            
             if (this.StochasticWorld)
             {
                 damage = enemy.GetComponent<Monster>().DmgRoll.Invoke();
@@ -249,12 +252,13 @@ public class GameManager : MonoBehaviour
 
             Monster monster = enemy.GetComponent<Monster>();
 
-            /*
+            
             foreach (var fm in Formations)
             {
+                fm.RemoveCharacter(enemy.GetComponent<Orc>());
                 fm.SlotAssignment.Remove(enemy.GetComponent<Orc>());
             }
-            */
+            
 
             if (enemy.activeSelf && monster.InWeaponRange(GameObject.FindGameObjectWithTag("Player")))
             {
