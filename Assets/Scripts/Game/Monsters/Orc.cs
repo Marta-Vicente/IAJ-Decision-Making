@@ -27,6 +27,7 @@ namespace Assets.Scripts.Game.NPCs
             this.enemyStats.SimpleDamage = 6;
             this.enemyStats.AwakeDistance = 15;
             this.enemyStats.WeaponRange = 3;
+            //usingFormation = false;
         }
 
         public override void InitializeBehaviourTree()
@@ -57,7 +58,8 @@ namespace Assets.Scripts.Game.NPCs
         public override void FixedUpdate()
         {
             if (GameManager.Instance.gameEnded) return;
-            if (usingBehaviourTree)
+
+            if (usingBehaviourTree && !usingFormation)
             {
                 if (this.BehaviourTree != null)
                     this.BehaviourTree.Run();

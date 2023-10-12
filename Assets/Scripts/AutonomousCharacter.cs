@@ -222,7 +222,7 @@ public class AutonomousCharacter : NPC
             if (enemy != null)
             {
                 //HERE WHEN ENEMY IN FRONT RECALCULET ALL, Ping pong effect
-                GameManager.Instance.WorldChanged = true;
+                //GameManager.Instance.WorldChanged = true;
                 AddToDiary(" There is " + enemy.name + " in front of me!");
                 this.nearEnemy = enemy;
             }

@@ -40,7 +40,7 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
             return initialStateForPlayout.GetScore();
         }
 
-        
+        /*
         private Action GetBestActionH(Action[] actions, WorldModel worldModel)
         {
             var largertH = 0f;
@@ -76,8 +76,9 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
 
             return biasActions[ActionNumber];
         }
+        */
         
-        /*
+       
         private Action GetBestActionH(Action[] actions, WorldModel worldModel)
         {
             var bestH = 1000f;
@@ -96,6 +97,5 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
 
             return bestAction;
         }
-        */
     }
 }

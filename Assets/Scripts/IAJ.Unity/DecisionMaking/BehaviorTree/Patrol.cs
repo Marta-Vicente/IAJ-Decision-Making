@@ -21,8 +21,12 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.BehaviorTree.BehaviourTrees
         public Vector3 HuntingTarget;
         public float HuntingTimerMax = 20f;
 
+        private Orc orc;
+
         public Patrol(Monster character, GameObject target)
         {
+            orc = (Orc) character;
+
             List<Task> tasks = new List<Task>();
 
             checker = new IsCharacterNearTarget(character, target, character.enemyStats.AwakeDistance);
@@ -109,7 +113,8 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.BehaviorTree.BehaviourTrees
 
         public void HeardScream(object sender, Vector3 e)
         {
-            Debug.Log("WAAAAGHH! at " + e);
+            //Debug.Log("WAAAAGHH! at " + e);
+            orc.usingFormation = false;
             IsOnTheHunt = true;
             HuntingTarget = e;
             hunting.Target = HuntingTarget; 

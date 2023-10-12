@@ -6,6 +6,7 @@ using UnityEngine.AI;
 using Assets.Scripts.IAJ.Unity.DecisionMaking.BehaviorTree;
 using Assets.Scripts.IAJ.Unity.DecisionMaking.BehaviorTree.BehaviourTrees;
 using System.Collections.Generic;
+using Assets.Scripts.IAJ.Unity.Formations;
 
 namespace Assets.Scripts.Game.NPCs
 {
@@ -35,6 +36,8 @@ namespace Assets.Scripts.Game.NPCs
         public Task BehaviourTree;
 
         public bool usingFormation;
+
+        public FormationManager FormationManager;
 
         public Vector3 DefaultPosition { get; private set; }
 

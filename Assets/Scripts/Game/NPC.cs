@@ -65,6 +65,7 @@ namespace Assets.Scripts.Game
         }
 
         // Simple way of calculating distance left to target using Unity's navmesh
+        /*
         public float GetDistanceToTarget(Vector3 originalPosition, Vector3 targetPosition)
         {
             var distance = 0.0f;
@@ -85,6 +86,11 @@ namespace Assets.Scripts.Game
 
             //Default value
             return 100;
+        }
+        */
+        public float GetDistanceToTarget(Vector3 originalPosition, Vector3 targetPosition)
+        {
+            return (float) Math.Sqrt(Math.Pow(targetPosition.x - originalPosition.x, 2) + Math.Pow(targetPosition.y - originalPosition.y, 2)) * 2;
         }
 
         #endregion
