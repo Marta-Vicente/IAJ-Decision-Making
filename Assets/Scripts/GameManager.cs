@@ -74,6 +74,9 @@ public class GameManager : MonoBehaviour
         var monster3 = orcs[3];
         var monster4 = orcs[4];
         var monster5 = orcs[5];
+
+        orcs[5].GetComponent<Orc>().isAnchor = true;
+
         var lineForm = new LineFormation();
         var lineFormationManager = new FormationManager(new List<Monster>
             {

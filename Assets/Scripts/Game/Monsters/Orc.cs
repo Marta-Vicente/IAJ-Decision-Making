@@ -17,6 +17,8 @@ namespace Assets.Scripts.Game.NPCs
 
         public AudioSource audioSource;
         public GameObject screamView;
+        public bool isAnchor = false;
+
         public Orc()
         {
             this.enemyStats.Type = "Orc";
@@ -52,7 +54,10 @@ namespace Assets.Scripts.Game.NPCs
             //TODO Create a Behavior tree that combines Patrol with other behaviors...
             //var mainTree = new Patrol(this, position1, position2);
 
-            this.BehaviourTree = new OrcBasicTree(this, Target);
+            /*if (this.isAnchor)
+                this.BehaviourTree = new AnchorBasicTree(this, Target);*/
+            //else
+                this.BehaviourTree = new OrcBasicTree(this, Target);
          }
 
         public override void FixedUpdate()
