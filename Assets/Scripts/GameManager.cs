@@ -244,17 +244,14 @@ public class GameManager : MonoBehaviour
                 this.gameEnded = true;
                 this.GameEnd.GetComponentInChildren<Text>().text = "Victory \n GG EZ";
             }
-
+            
             if(Formations != null)
             {
                 foreach (var fm in Formations)
                 {
                     fm.UpdateSlots();
-                }
+                }    
             }
-         
-            
-        }
     }
 
     public void SwordAttack(GameObject enemy)
@@ -278,7 +275,6 @@ public class GameManager : MonoBehaviour
                     }
                 }
             }
-
             if (this.StochasticWorld)
             {
                 damage = enemy.GetComponent<Monster>().DmgRoll.Invoke();
@@ -288,6 +284,14 @@ public class GameManager : MonoBehaviour
 
                 if (attackRoll >= enemyData.AC)
                 {
+                    if (enemy.GetComponent<Monster>().usingFormation)
+                    {
+                        foreach (var fm in Formations)
+                        {
+                            fm.RemoveCharacter(enemy.GetComponent<Orc>());
+                            fm.SlotAssignment.Remove(enemy.GetComponent<Orc>());
+                        }
+                    }
                     //there was an hit, enemy is destroyed, gain xp
                     this.enemies.Remove(enemy);
                     this.disposableObjects[enemy.name].Remove(enemy);
@@ -297,6 +301,14 @@ public class GameManager : MonoBehaviour
             }
             else
             {
+                if (enemy.GetComponent<Monster>().usingFormation)
+                {
+                    foreach (var fm in Formations)
+                    {
+                        fm.RemoveCharacter(enemy.GetComponent<Orc>());
+                        fm.SlotAssignment.Remove(enemy.GetComponent<Orc>());
+                    }
+                }
                 damage = enemyData.SimpleDamage;
                 this.enemies.Remove(enemy);
                 this.disposableObjects[enemy.name].Remove(enemy);
@@ -326,7 +338,6 @@ public class GameManager : MonoBehaviour
             int damage = 0;
 
             Monster monster = enemy.GetComponent<Monster>();
-
             if (Formations != null)
             {
                 foreach (var fm in Formations)
@@ -338,7 +349,6 @@ public class GameManager : MonoBehaviour
                     }
                 }
             }
-
 
             if (enemy.activeSelf && monster.InWeaponRange(GameObject.FindGameObjectWithTag("Player")))
             {
@@ -355,6 +365,14 @@ public class GameManager : MonoBehaviour
 
                     if (attackRoll >= monster.enemyStats.AC)
                     {
+                        if (enemy.GetComponent<Monster>().usingFormation)
+                        {
+                            foreach (var fm in Formations)
+                            {
+                                fm.RemoveCharacter(enemy.GetComponent<Orc>());
+                                fm.SlotAssignment.Remove(enemy.GetComponent<Orc>());
+                            }
+                        }
                         //there was an hit, enemy is destroyed, gain xp
                         this.enemies.Remove(enemy);
                         this.disposableObjects.Remove(enemy.name);
@@ -364,6 +382,14 @@ public class GameManager : MonoBehaviour
                 }
                 else
                 {
+                    if (enemy.GetComponent<Monster>().usingFormation)
+                    {
+                        foreach (var fm in Formations)
+                        {
+                            fm.RemoveCharacter(enemy.GetComponent<Orc>());
+                            fm.SlotAssignment.Remove(enemy.GetComponent<Orc>());
+                        }
+                    }
                     damage = monster.enemyStats.SimpleDamage;
                     this.enemies.Remove(enemy);
                     this.disposableObjects.Remove(enemy.name);

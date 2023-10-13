@@ -54,7 +54,6 @@ namespace Assets.Scripts.Game.NPCs
 
             //TODO Create a Behavior tree that combines Patrol with other behaviors...
             //var mainTree = new Patrol(this, position1, position2);
-
             if (this.isAnchor)
             {
                 this.usingFormation = false;
@@ -70,6 +69,7 @@ namespace Assets.Scripts.Game.NPCs
                 this.setNavAgentBehavior();
             else
                 this.BehaviourTree = new OrcBasicTree(this, Target);
+            
          }
 
         public override void FixedUpdate()
