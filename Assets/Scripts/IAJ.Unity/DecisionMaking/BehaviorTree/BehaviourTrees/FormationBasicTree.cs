@@ -10,13 +10,13 @@ using Assets.Scripts.Game.NPCs;
 
 namespace Assets.Scripts.IAJ.Unity.DecisionMaking.BehaviorTree.BehaviourTrees
 {
-    class AnchorBasicTree : Sequence
+    class FormationBasicTree : Sequence
     {
-        public AnchorBasicTree(Monster character, GameObject target, Vector3 PositionA, Vector3 PositionB)
+        public FormationBasicTree(Monster character, GameObject target, OrcBasicTree orcBehavior)
         {
             this.children = new List<Task>()
             {
-                new Patrol(character, target, PositionA, PositionB)
+                new FormationMovement(character, target, orcBehavior)
             };
 
         }

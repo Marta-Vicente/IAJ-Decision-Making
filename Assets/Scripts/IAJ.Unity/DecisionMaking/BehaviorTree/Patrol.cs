@@ -59,7 +59,39 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.BehaviorTree.BehaviourTrees
             Scream += HeardScream;
         }
 
-        
+        public Patrol(Monster character, GameObject target, Vector3 PositionA, Vector3 PositionB)
+        {
+            orc = (Orc)character;
+
+            List<Task> tasks = new List<Task>();
+
+            checker = new IsCharacterNearTarget(character, target, character.enemyStats.AwakeDistance);
+            hunting = new MoveTo(character, PositionA, 1f, false, HuntingTimerMax);
+            tasks.Add(
+                new Sequence(new List<Task>
+                                {
+                                    new IsCharacterNearTarget(character, target, character.enemyStats.AwakeDistance),
+                                    new PursueOrc(character, target, character.enemyStats.WeaponRange),
+                                    new LightAttack(character)
+                                })
+            );
+            tasks.Add(
+                new Sequence(
+                        new List<Task>
+                        {
+                            new MoveTo(character, new Vector3(PositionA.x, PositionA.y, PositionA.z), 1.0f, false, 50f),
+                            new MoveTo(character, new Vector3(PositionB.x, PositionB.y, PositionB.z), 1.0f, false, 50f)
+                        }
+                 )
+            );
+            tasks.Add(new MoveTo(character, PositionA, 1.0f));
+
+            this.children = tasks;
+
+            Scream += HeardScream;
+        }
+
+
         public override Result Run()
         {
 
@@ -79,6 +111,7 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.BehaviorTree.BehaviourTrees
             {
                 currentChild = 0;
                 IsOnTheHunt = false;
+                orc.usingFormation = false;
                 return Result.Running;
             }
 

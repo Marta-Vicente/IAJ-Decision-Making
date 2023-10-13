@@ -7,16 +7,17 @@ using Assets.Scripts.IAJ.Unity.DecisionMaking.BehaviorTree.EnemyTasks;
 using UnityEngine;
 using Assets.Scripts.Game;
 using Assets.Scripts.Game.NPCs;
+using static UnityEngine.GraphicsBuffer;
 
 namespace Assets.Scripts.IAJ.Unity.DecisionMaking.BehaviorTree.BehaviourTrees
 {
-    class AnchorBasicTree : Sequence
+    class NavMachBT : Sequence
     {
-        public AnchorBasicTree(Monster character, GameObject target, Vector3 PositionA, Vector3 PositionB)
+        public NavMachBT(Monster character, Vector3 PositionA, Vector3 PositionB)
         {
             this.children = new List<Task>()
             {
-                new Patrol(character, target, PositionA, PositionB)
+                new NavAgentMovement(character, PositionA, PositionB)
             };
 
         }

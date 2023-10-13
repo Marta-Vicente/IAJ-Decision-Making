@@ -18,6 +18,7 @@ namespace Assets.Scripts.Game.NPCs
         public AudioSource audioSource;
         public GameObject screamView;
         public bool isAnchor = false;
+        public bool isNavAgent = false;
 
         public Orc()
         {
@@ -54,9 +55,20 @@ namespace Assets.Scripts.Game.NPCs
             //TODO Create a Behavior tree that combines Patrol with other behaviors...
             //var mainTree = new Patrol(this, position1, position2);
 
-            /*if (this.isAnchor)
-                this.BehaviourTree = new AnchorBasicTree(this, Target);*/
-            //else
+            if (this.isAnchor)
+            {
+                this.usingFormation = false;
+                this.BehaviourTree = new AnchorBasicTree(this, Target,
+                    new Vector3(25.92593f, this.DefaultPosition.y, 12.46296f),
+                    new Vector3(74.07407f, this.DefaultPosition.y, 94.44444f));
+            }
+            else if (this.usingFormation)
+            {
+                this.BehaviourTree = new FormationBasicTree(this, Target, new OrcBasicTree(this, Target));
+            }
+            else if (this.isNavAgent)
+                this.setNavAgentBehavior();
+            else
                 this.BehaviourTree = new OrcBasicTree(this, Target);
          }
 
@@ -64,7 +76,7 @@ namespace Assets.Scripts.Game.NPCs
         {
             if (GameManager.Instance.gameEnded) return;
 
-            if (usingBehaviourTree && !usingFormation)
+            if (usingBehaviourTree)
             {
                 if (this.BehaviourTree != null)
                     this.BehaviourTree.Run();
@@ -88,6 +100,13 @@ namespace Assets.Scripts.Game.NPCs
             s.centerPosition = pos;
             s.asset = newObject;
             
+        }
+
+        public void setNavAgentBehavior()
+        {
+            this.BehaviourTree = new NavMachBT(this,
+                    new Vector3(25.92593f, this.DefaultPosition.y, 12.46296f),
+                    new Vector3(74.07407f, this.DefaultPosition.y, 94.44444f));
         }
 
     }
