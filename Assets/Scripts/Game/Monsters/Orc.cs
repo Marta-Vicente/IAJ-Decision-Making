@@ -54,9 +54,9 @@ namespace Assets.Scripts.Game.NPCs
             //TODO Create a Behavior tree that combines Patrol with other behaviors...
             //var mainTree = new Patrol(this, position1, position2);
 
-            /*if (this.isAnchor)
-                this.BehaviourTree = new AnchorBasicTree(this, Target);*/
-            //else
+            if(this.usingFormation && this.isAnchor)
+                this.BehaviourTree = new AnchorBasicTree(this, Target);
+            else if (!this.usingFormation && !this.isAnchor)
                 this.BehaviourTree = new OrcBasicTree(this, Target);
          }
 
