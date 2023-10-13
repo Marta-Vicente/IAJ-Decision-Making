@@ -28,6 +28,15 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel.ForwardModelActio
             return currentdHP < MaxHP;
         }
 
+        public override bool CanExecute(WorldModelFEAR worldModel)
+        {
+            if (!base.CanExecute(worldModel)) return false;
+
+            var currentdHP = (int)worldModel.GetProperty(Properties.HP);
+            var MaxHP = (int)worldModel.GetProperty(Properties.MAXHP);
+            return currentdHP < MaxHP;
+        }
+
         public override void Execute()
         {
             GameManager.Instance.Rest();
@@ -70,6 +79,35 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel.ForwardModelActio
             var enemyNear = 0;
 
             if (currentHP + 2 <= maxHP )
+            {
+                change = 2;
+            }
+            else if (currentHP + 1 <= maxHP)
+            {
+                change = 1;
+            }
+            if (Character.nearEnemy)
+                enemyNear = 3;
+
+            worldModel.SetProperty(Properties.HP, currentHP + change);
+            worldModel.SetGoalValue(AutonomousCharacter.SURVIVE_GOAL, surviveGoal - change + enemyNear);
+            worldModel.SetGoalValue(AutonomousCharacter.BE_QUICK_GOAL, beQuickGoal + this.Duration);
+
+        }
+
+        public override void ApplyActionEffects(WorldModelFEAR worldModel)
+        {
+            base.ApplyActionEffects(worldModel);
+
+            var maxHP = (int)worldModel.GetProperty(Properties.MAXHP);
+            var currentHP = (int)worldModel.GetProperty(Properties.HP);
+            var surviveGoal = worldModel.GetGoalValue(AutonomousCharacter.SURVIVE_GOAL);
+            var beQuickGoal = worldModel.GetGoalValue(AutonomousCharacter.BE_QUICK_GOAL);
+
+            var change = 0;
+            var enemyNear = 0;
+
+            if (currentHP + 2 <= maxHP)
             {
                 change = 2;
             }

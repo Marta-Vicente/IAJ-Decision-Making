@@ -38,6 +38,12 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel.ForwardModelActio
             return true;
         }
 
+        public override bool CanExecute(WorldModelFEAR worldModel)
+        {
+            if (!base.CanExecute(worldModel)) return false;
+            return true;
+        }
+
         public override void Execute()
         {
             
@@ -46,6 +52,20 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel.ForwardModelActio
         }
 
         public override void ApplyActionEffects(WorldModel worldModel)
+        {
+            base.ApplyActionEffects(worldModel);
+
+            var goalValue = worldModel.GetGoalValue(AutonomousCharacter.GET_RICH_GOAL);
+            worldModel.SetGoalValue(AutonomousCharacter.GET_RICH_GOAL, goalValue - 5.0f);
+
+            var money = (int)worldModel.GetProperty(Properties.MONEY);
+            worldModel.SetProperty(Properties.MONEY, money + 5);
+
+            //disables the target object so that it can't be reused again
+            worldModel.SetProperty(this.Target.name, false);
+        }
+
+        public override void ApplyActionEffects(WorldModelFEAR worldModel)
         {
             base.ApplyActionEffects(worldModel);
 

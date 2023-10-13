@@ -50,6 +50,7 @@ public class AutonomousCharacter : NPC
     public bool GOAPActive;
     public bool MTCSActive;
     public bool MTCSBiasActive;
+    public bool GOAPFEARActive;
  
     [Header("Character Info")]
     public bool Resting = false;
@@ -68,6 +69,8 @@ public class AutonomousCharacter : NPC
 
     public MCTS MCTSDecisionMaking { get; set; }
     public MCTSBiasedPlayout MCTSDecisionMakingBiasedPlayout { get; set; }
+
+    public DepthLimitedGOAPDecisionMakingFEAR GOAPFEARDecisionMaking { get; set; }
 
     public GameObject nearEnemy { get; private set; }
 
@@ -204,6 +207,11 @@ public class AutonomousCharacter : NPC
                 var worldModel = new CurrentStateWorldModel(GameManager.Instance, this.Actions, this.Goals);
                 this.MCTSDecisionMakingBiasedPlayout = new MCTSBiasedPlayout(worldModel);
             }
+            else if (this.GOAPFEARActive)
+            {
+                var worldModel = new CurrentStateWorldModel(GameManager.Instance, this.Actions, this.Goals);
+                this.GOAPFEARDecisionMaking = new DepthLimitedGOAPDecisionMakingFEAR(worldModel, this.Actions, this.Goals);
+            }
         }
 
         this.initialPositon = gameObject.transform.position;
@@ -288,6 +296,10 @@ public class AutonomousCharacter : NPC
             {
                 this.MCTSDecisionMakingBiasedPlayout.InitializeMCTSearch();
             }
+            else if(GOAPFEARActive)
+            {
+                this.GOAPFEARDecisionMaking.InitializeDecisionMakingProcess();
+            }
         }
 
         if (this.controlledByPlayer)
@@ -334,6 +346,10 @@ public class AutonomousCharacter : NPC
         else if (this.MTCSBiasActive) 
         {
             this.UpdateMCTSBias();
+        }
+        else if (this.GOAPFEARActive)
+        {
+            this.UpdateDLGOAPFEAR();
         }
 
         if (this.CurrentAction != null)
@@ -588,6 +604,45 @@ public class AutonomousCharacter : NPC
         {
             this.BestActionSequence.text = "Best Action Sequence:\nNone";
             this.BestActionText.text = "";
+        }
+    }
+
+    void UpdateDLGOAPFEAR()
+    {
+        bool newDecision = false;
+        if (this.GOAPFEARDecisionMaking.InProgress)
+        {
+            //choose an action using the GOB Decision Making process
+            var action = this.GOAPFEARDecisionMaking.ChooseAction();
+            if (action != null && action != this.CurrentAction)
+            {
+                this.CurrentAction = action;
+                newDecision = true;
+            }
+        }
+
+        this.TotalProcessingTimeText.text = "Process. Time: " + this.GOAPFEARDecisionMaking.TotalProcessingTime.ToString("F");
+        this.BestDiscontentmentText.text = "Best Discontentment: " + this.GOAPFEARDecisionMaking.BestDiscontentmentValue.ToString("F");
+        this.ProcessedActionsText.text = "Act. comb. processed: " + this.GOAPFEARDecisionMaking.TotalActionCombinationsProcessed;
+
+        if (this.GOAPFEARDecisionMaking.BestAction != null)
+        {
+            if (newDecision)
+            {
+                AddToDiary(" I decided to " + GOAPFEARDecisionMaking.BestAction.Name);
+            }
+            var actionText = "";
+            foreach (var action in this.GOAPFEARDecisionMaking.BestActionSequence)
+            {
+                actionText += "\n" + action.Name;
+            }
+            this.BestActionSequence.text = "Best Action Sequence: " + actionText;
+            this.BestActionText.text = "Best Action: " + GOAPFEARDecisionMaking.BestAction.Name;
+        }
+        else
+        {
+            this.BestActionSequence.text = "Best Action Sequence:\nNone";
+            this.BestActionText.text = "Best Action: \n Node";
         }
     }
 

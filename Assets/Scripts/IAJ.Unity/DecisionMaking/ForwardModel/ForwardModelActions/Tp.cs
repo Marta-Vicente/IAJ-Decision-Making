@@ -26,6 +26,15 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel.ForwardModelActio
             return level >= 2 && currentMana >= 5;
         }
 
+        public override bool CanExecute(WorldModelFEAR worldModel)
+        {
+            if (!base.CanExecute(worldModel)) return false;
+
+            var level = (int)worldModel.GetProperty(Properties.LEVEL);
+            var currentMana = (int)worldModel.GetProperty(Properties.MANA);
+            return level >= 2 && currentMana >= 5;
+        }
+
         public override void Execute()
         {
             GameManager.Instance.Teleport();
@@ -45,6 +54,22 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel.ForwardModelActio
 
         
         public override void ApplyActionEffects(WorldModel worldModel)
+        {
+            base.ApplyActionEffects(worldModel);
+
+            var mana = (int)worldModel.GetProperty(Properties.MANA);
+            worldModel.SetProperty(Properties.MANA, mana - 5);
+
+            worldModel.SetProperty(Properties.POSITION, Character.initialPositon);
+
+            var surviveValue = worldModel.GetGoalValue(AutonomousCharacter.SURVIVE_GOAL);
+
+            worldModel.SetGoalValue(AutonomousCharacter.SURVIVE_GOAL, surviveValue);
+
+
+        }
+
+        public override void ApplyActionEffects(WorldModelFEAR worldModel)
         {
             base.ApplyActionEffects(worldModel);
 

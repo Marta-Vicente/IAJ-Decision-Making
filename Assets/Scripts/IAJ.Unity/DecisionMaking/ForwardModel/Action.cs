@@ -44,7 +44,17 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel
             return this.Duration;
         }
 
+        public virtual float GetDuration(WorldModelFEAR worldModel)
+        {
+            return this.Duration;
+        }
+
         public virtual bool CanExecute(WorldModel woldModel)
+        {
+            return true;
+        }
+
+        public virtual bool CanExecute(WorldModelFEAR woldModel)
         {
             return true;
         }
@@ -61,6 +71,10 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel
 
         // Used for GOAP Decison Making
         public virtual void ApplyActionEffects(WorldModel worldModel)
+        {
+        }
+
+        public virtual void ApplyActionEffects(WorldModelFEAR worldModel)
         {
         }
 

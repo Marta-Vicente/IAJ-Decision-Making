@@ -25,6 +25,15 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel.ForwardModelActio
             return currentHP < maxHP;
         }
 
+        public override bool CanExecute(WorldModelFEAR worldModel)
+        {
+            if (!base.CanExecute(worldModel)) return false;
+
+            var currentHP = (int)worldModel.GetProperty(Properties.HP);
+            var maxHP = (int)worldModel.GetProperty(Properties.MAXHP);
+            return currentHP < maxHP;
+        }
+
         public override void Execute()
         {
             base.Execute();
@@ -45,6 +54,17 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel.ForwardModelActio
         }
 
         public override void ApplyActionEffects(WorldModel worldModel)
+        {
+            base.ApplyActionEffects(worldModel);
+            var maxHP = (int)worldModel.GetProperty(Properties.MAXHP);
+            worldModel.SetProperty(Properties.HP, maxHP);
+            worldModel.SetGoalValue(AutonomousCharacter.SURVIVE_GOAL, 0.0f);
+
+            //disables the target object so that it can't be reused again
+            worldModel.SetProperty(this.Target.name, false);
+        }
+
+        public override void ApplyActionEffects(WorldModelFEAR worldModel)
         {
             base.ApplyActionEffects(worldModel);
             var maxHP = (int)worldModel.GetProperty(Properties.MAXHP);

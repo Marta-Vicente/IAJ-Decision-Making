@@ -28,6 +28,12 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel.ForwardModelActio
             return this.GetDuration(position);
         }
 
+        public override float GetDuration(WorldModelFEAR worldModel)
+        {
+            var position = (Vector3)worldModel.GetProperty(Properties.POSITION);
+            return this.GetDuration(position);
+        }
+
         private float GetDuration(Vector3 currentPosition)
         {
             //rough estimation, with no pathfinding...
@@ -57,6 +63,13 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel.ForwardModelActio
             return targetEnabled;
         }
 
+        public override bool CanExecute(WorldModelFEAR worldModel)
+        {
+            if (this.Target == null) return false;
+            var targetEnabled = (bool)worldModel.GetProperty(this.Target.name);
+            return targetEnabled;
+        }
+
         public override void Execute()
         {
             Vector3 delta = this.Target.transform.position - this.Character.transform.position;
@@ -67,6 +80,19 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel.ForwardModelActio
 
 
         public override void ApplyActionEffects(WorldModel worldModel)
+        {
+            var duration = this.GetDuration(worldModel);
+
+            var quicknessValue = worldModel.GetGoalValue(AutonomousCharacter.BE_QUICK_GOAL);
+            worldModel.SetGoalValue(AutonomousCharacter.BE_QUICK_GOAL, quicknessValue + duration /** 0.1f*/);
+
+            var time = (float)worldModel.GetProperty(Properties.TIME);
+            worldModel.SetProperty(Properties.TIME, time + duration * 3);
+
+            worldModel.SetProperty(Properties.POSITION, Target.transform.position);
+        }
+
+        public override void ApplyActionEffects(WorldModelFEAR worldModel)
         {
             var duration = this.GetDuration(worldModel);
 

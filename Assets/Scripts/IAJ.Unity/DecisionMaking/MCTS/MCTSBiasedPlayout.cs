@@ -27,15 +27,15 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
             Action[] executableActions;
 
             var currentDepth = 0;
-            var maxDepthAllowed = 100;
 
-            /*while (!initialStateForPlayout.IsTerminal())
+            while (!initialStateForPlayout.IsTerminal())
             {
                 executableActions = initialStateForPlayout.GetExecutableActions();
                 var actionPicked = GetBestActionH(executableActions, initialStateForPlayout);
                 actionPicked.ApplyActionEffects(initialStateForPlayout);
                 currentDepth++;
-            }*/
+            }
+            /*
             while (currentDepth < maxDepthAllowed && !initialStateForPlayout.IsTerminal())
             {
                 executableActions = initialStateForPlayout.GetExecutableActions();
@@ -43,7 +43,7 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
                 actionPicked.ApplyActionEffects(initialStateForPlayout);
                 currentDepth++;
             }
-
+            */
             if (currentDepth > this.MaxPlayoutDepthReached) this.MaxPlayoutDepthReached = currentDepth;
 
             return initialStateForPlayout.GetScore();
