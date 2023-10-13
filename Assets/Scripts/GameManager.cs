@@ -244,14 +244,15 @@ public class GameManager : MonoBehaviour
                 this.gameEnded = true;
                 this.GameEnd.GetComponentInChildren<Text>().text = "Victory \n GG EZ";
             }
-            
-            if(Formations != null)
+
+            if (Formations != null)
             {
                 foreach (var fm in Formations)
                 {
                     fm.UpdateSlots();
-                }    
+                }
             }
+        }
     }
 
     public void SwordAttack(GameObject enemy)
@@ -275,6 +276,7 @@ public class GameManager : MonoBehaviour
                     }
                 }
             }
+
             if (this.StochasticWorld)
             {
                 damage = enemy.GetComponent<Monster>().DmgRoll.Invoke();
