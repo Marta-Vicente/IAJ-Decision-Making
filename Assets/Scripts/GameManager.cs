@@ -182,10 +182,11 @@ public class GameManager : MonoBehaviour
                 this.GameEnd.GetComponentInChildren<Text>().text = "Victory \n GG EZ";
             }
 
-            
             foreach(var fm in Formations)
             {
-                fm.UpdateSlots();
+                if(fm.SlotAssignment.Keys.First().usingFormation)
+                    fm.UpdateSlots();
+                
             }
             
         }
@@ -201,12 +202,6 @@ public class GameManager : MonoBehaviour
         {
             this.Character.AddToDiary(" I Sword Attacked " + enemy.name);
             
-            foreach (var fm in Formations)
-            {
-                fm.RemoveCharacter(enemy.GetComponent<Orc>());
-                fm.SlotAssignment.Remove(enemy.GetComponent<Orc>());
-            }
-            
             if (this.StochasticWorld)
             {
                 damage = enemy.GetComponent<Monster>().DmgRoll.Invoke();
@@ -216,6 +211,14 @@ public class GameManager : MonoBehaviour
 
                 if (attackRoll >= enemyData.AC)
                 {
+                    if (enemy.GetComponent<Monster>().usingFormation)
+                    {
+                        foreach (var fm in Formations)
+                        {
+                            fm.RemoveCharacter(enemy.GetComponent<Orc>());
+                            fm.SlotAssignment.Remove(enemy.GetComponent<Orc>());
+                        }
+                    }
                     //there was an hit, enemy is destroyed, gain xp
                     this.enemies.Remove(enemy);
                     this.disposableObjects[enemy.name].Remove(enemy);
@@ -225,6 +228,14 @@ public class GameManager : MonoBehaviour
             }
             else
             {
+                if (enemy.GetComponent<Monster>().usingFormation)
+                {
+                    foreach (var fm in Formations)
+                    {
+                        fm.RemoveCharacter(enemy.GetComponent<Orc>());
+                        fm.SlotAssignment.Remove(enemy.GetComponent<Orc>());
+                    }
+                }
                 damage = enemyData.SimpleDamage;
                 this.enemies.Remove(enemy);
                 this.disposableObjects[enemy.name].Remove(enemy);
@@ -254,13 +265,6 @@ public class GameManager : MonoBehaviour
             int damage = 0;
 
             Monster monster = enemy.GetComponent<Monster>();
-
-            
-            foreach (var fm in Formations)
-            {
-                fm.RemoveCharacter(enemy.GetComponent<Orc>());
-                fm.SlotAssignment.Remove(enemy.GetComponent<Orc>());
-            }
             
 
             if (enemy.activeSelf && monster.InWeaponRange(GameObject.FindGameObjectWithTag("Player")))
@@ -278,6 +282,14 @@ public class GameManager : MonoBehaviour
 
                     if (attackRoll >= monster.enemyStats.AC)
                     {
+                        if (enemy.GetComponent<Monster>().usingFormation)
+                        {
+                            foreach (var fm in Formations)
+                            {
+                                fm.RemoveCharacter(enemy.GetComponent<Orc>());
+                                fm.SlotAssignment.Remove(enemy.GetComponent<Orc>());
+                            }
+                        }
                         //there was an hit, enemy is destroyed, gain xp
                         this.enemies.Remove(enemy);
                         this.disposableObjects.Remove(enemy.name);
@@ -287,6 +299,14 @@ public class GameManager : MonoBehaviour
                 }
                 else
                 {
+                    if (enemy.GetComponent<Monster>().usingFormation)
+                    {
+                        foreach (var fm in Formations)
+                        {
+                            fm.RemoveCharacter(enemy.GetComponent<Orc>());
+                            fm.SlotAssignment.Remove(enemy.GetComponent<Orc>());
+                        }
+                    }
                     damage = monster.enemyStats.SimpleDamage;
                     this.enemies.Remove(enemy);
                     this.disposableObjects.Remove(enemy.name);
