@@ -40,7 +40,7 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel.ForwardModelActio
         {
             if (goal.Name == AutonomousCharacter.BE_QUICK_GOAL)
             {
-                return this.GetDuration();
+                return this.GetDuration() * 3;
             }
             else return 0.0f;
         }
@@ -71,10 +71,10 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel.ForwardModelActio
             var duration = this.GetDuration(worldModel);
 
             var quicknessValue = worldModel.GetGoalValue(AutonomousCharacter.BE_QUICK_GOAL);
-            worldModel.SetGoalValue(AutonomousCharacter.BE_QUICK_GOAL, quicknessValue + duration * 0.1f);
+            worldModel.SetGoalValue(AutonomousCharacter.BE_QUICK_GOAL, quicknessValue + duration /** 0.1f*/);
 
             var time = (float)worldModel.GetProperty(Properties.TIME);
-            worldModel.SetProperty(Properties.TIME, time + duration);
+            worldModel.SetProperty(Properties.TIME, time + duration * 3);
 
             worldModel.SetProperty(Properties.POSITION, Target.transform.position);
         }

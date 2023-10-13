@@ -7,9 +7,11 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel.ForwardModelActio
     public class Rest : Action
     {
         protected AutonomousCharacter Character { get; set; }
+
         public Rest(AutonomousCharacter character) : base("Rest")
         {
             Character = character;
+            Duration = 2.0f;
         }
 
         public override bool CanExecute()
@@ -38,6 +40,12 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel.ForwardModelActio
             if (goal.Name == AutonomousCharacter.SURVIVE_GOAL)
             {
                 change -= 2;
+
+                if (Character.nearEnemy) change += 3;
+            }
+            else if (goal.Name == AutonomousCharacter.BE_QUICK_GOAL)
+            {
+                change += this.Duration;
             }
  
             return change;
@@ -56,8 +64,10 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel.ForwardModelActio
             var maxHP = (int)worldModel.GetProperty(Properties.MAXHP);
             var currentHP = (int)worldModel.GetProperty(Properties.HP);
             var surviveGoal = worldModel.GetGoalValue(AutonomousCharacter.SURVIVE_GOAL);
+            var beQuickGoal = worldModel.GetGoalValue(AutonomousCharacter.BE_QUICK_GOAL);
 
             var change = 0;
+            var enemyNear = 0;
 
             if (currentHP + 2 <= maxHP )
             {
@@ -67,9 +77,12 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel.ForwardModelActio
             {
                 change = 1;
             }
+            if (Character.nearEnemy)
+                enemyNear = 3;
 
             worldModel.SetProperty(Properties.HP, currentHP + change);
-            worldModel.SetGoalValue(AutonomousCharacter.SURVIVE_GOAL, surviveGoal - change);
+            worldModel.SetGoalValue(AutonomousCharacter.SURVIVE_GOAL, surviveGoal - change + enemyNear);
+            worldModel.SetGoalValue(AutonomousCharacter.BE_QUICK_GOAL, beQuickGoal + this.Duration);
 
         }
 

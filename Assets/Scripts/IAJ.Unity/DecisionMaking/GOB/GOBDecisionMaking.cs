@@ -71,7 +71,7 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.GOB
             if (discontentment < BestDiscontentmentValue)
             {
                 BestDiscontentmentValue = discontentment;
-                Debug.Log("MY DISCONTEMENT IS BIG " + discontentment);
+                //Debug.Log("MY DISCONTEMENT IS BIG " + discontentment);
             }
             
             return discontentment;
