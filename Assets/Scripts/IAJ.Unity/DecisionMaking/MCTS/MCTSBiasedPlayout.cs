@@ -27,7 +27,16 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
             Action[] executableActions;
 
             var currentDepth = 0;
-            while (!initialStateForPlayout.IsTerminal())
+            var maxDepthAllowed = 100;
+
+            /*while (!initialStateForPlayout.IsTerminal())
+            {
+                executableActions = initialStateForPlayout.GetExecutableActions();
+                var actionPicked = GetBestActionH(executableActions, initialStateForPlayout);
+                actionPicked.ApplyActionEffects(initialStateForPlayout);
+                currentDepth++;
+            }*/
+            while (currentDepth < maxDepthAllowed && !initialStateForPlayout.IsTerminal())
             {
                 executableActions = initialStateForPlayout.GetExecutableActions();
                 var actionPicked = GetBestActionH(executableActions, initialStateForPlayout);
