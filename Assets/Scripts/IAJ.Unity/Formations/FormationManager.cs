@@ -32,7 +32,7 @@ namespace Assets.Scripts.IAJ.Unity.Formations
             int i = 0;
             foreach (Monster npc in Monsters)
             {
-                npc.usingFormation = true;
+                //npc.usingFormation = true;
                 npc.FormationManager = this; 
                 SlotAssignment[npc] = i;
                 i++;
@@ -92,7 +92,6 @@ namespace Assets.Scripts.IAJ.Unity.Formations
 
                     locationPosition -= Vector3.one * 0.1f;
                     //locationOrientation -= 0.1f;
-
 
                     npc.StartPathfinding(locationPosition);
                     npc.GetComponent<NavMeshAgent>().updateRotation = true;

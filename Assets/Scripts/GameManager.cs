@@ -5,6 +5,8 @@ using UnityEngine;
 using UnityEngine.UI;
 using Assets.Scripts.Game.NPCs;
 using Assets.Scripts.IAJ.Unity.Formations;
+using Assets.Scripts.IAJ.Unity.DecisionMaking.BehaviorTree.BehaviourTrees;
+using static UnityEngine.GraphicsBuffer;
 
 public class GameManager : MonoBehaviour
 {
@@ -61,6 +63,12 @@ public class GameManager : MonoBehaviour
 
     public List<FormationManager> Formations { get; set; }
 
+    public GameObject NavAgent;
+
+    public GameObject FormationOrc3;
+    public GameObject FormationOrc4;
+    public GameObject FormationOrc5;
+
     void Awake()
     {
         Instance = this;
@@ -70,31 +78,87 @@ public class GameManager : MonoBehaviour
 
         this.initialPosition = this.Character.gameObject.transform.position;
 
-        
-        var monster3 = orcs[3];
-        var monster4 = orcs[4];
-        var monster5 = orcs[5];
 
-        orcs[5].GetComponent<Orc>().isAnchor = true;
+        //To use line make orc 3,4 using formation = true, 5 is anchor, get rid of nav mach to 1000y
+        try
+        {
+            var monster5 = FormationOrc5;
+            var monster3 = FormationOrc3;
+            var monster4 = FormationOrc4;
 
-        var lineForm = new LineFormation();
-        var lineFormationManager = new FormationManager(new List<Monster>
+            //monster5.GetComponent<Orc>().isAnchor = true;
+            
+            var lineForm = new LineFormation();
+            var lineFormationManager = new FormationManager(new List<Monster>()
             {
                 monster5.GetComponent<Orc>(),
-                monster3.GetComponent<Orc>(),
-                monster4.GetComponent<Orc>()
+                monster4.GetComponent<Orc>(),
+                monster3.GetComponent<Orc>()
+            },
+            lineForm, monster5.transform.position, monster5.transform.forward);
 
-            }, lineForm, monster5.transform.position, monster5.transform.forward);
-
-        lineFormationManager.AddCharacter(monster5.GetComponent<Orc>());
-        lineFormationManager.AddCharacter(monster3.GetComponent<Orc>());
-        lineFormationManager.AddCharacter(monster4.GetComponent<Orc>());
-
-        this.Formations = new List<FormationManager>()
+            
+            lineFormationManager.AddCharacter(monster5.GetComponent<Orc>());
+            lineFormationManager.AddCharacter(monster3.GetComponent<Orc>());
+            lineFormationManager.AddCharacter(monster4.GetComponent<Orc>());
+            
+            
+            this.Formations = new List<FormationManager>()
+            {
+                lineFormationManager
+            };
+            
+            
+        }
+        catch
         {
-            lineFormationManager
-        };
+            Debug.Log("Normal Dungeon, Formations off");
+            this.Formations = null;
+        }
         
+
+        //To use triangule make orc 3,4,5 using formation = true, no one is anchor, put nav mach at 0
+        /*
+        try
+        {
+            var monster5 = FormationOrc5;
+            var monster3 = FormationOrc3;
+            var monster4 = FormationOrc4;
+
+            // NavAgent.transform.position = new Vector3(NavAgent.transform.position.x, 0, NavAgent.transform.position.z);
+            monster5.GetComponent<Orc>().isAnchor = false;
+            NavAgent.GetComponent<Orc>().setNavAgentBehavior();
+
+            var triangularFormation = new TriangularFormation();
+            var trianguleFormationManager = new FormationManager(new List<Monster>()
+            {
+                NavAgent.GetComponent<Orc>(),
+                monster5.GetComponent<Orc>(),
+                monster4.GetComponent<Orc>(),
+                monster3.GetComponent<Orc>()
+            },
+            triangularFormation, NavAgent.GetComponent<Orc>().transform.position, NavAgent.GetComponent<Orc>().transform.forward);
+
+
+            trianguleFormationManager.AddCharacter(monster5.GetComponent<Orc>());
+            trianguleFormationManager.AddCharacter(monster3.GetComponent<Orc>());
+            trianguleFormationManager.AddCharacter(monster4.GetComponent<Orc>());
+
+
+            this.Formations = new List<FormationManager>()
+            {
+                trianguleFormationManager
+            };
+
+        }
+        catch
+        {
+            Debug.Log("Normal Dungeon, Formations off");
+            this.Formations = null;
+        }
+       */
+
+
     }
 
     public void UpdateDisposableObjects()
@@ -113,7 +177,6 @@ public class GameManager : MonoBehaviour
         //adds all enemies to the disposable objects collection
         foreach (var enemy in this.enemies)
         {
-
             if (disposableObjects.ContainsKey(enemy.name))
             {
                 this.disposableObjects[enemy.name].Add(enemy);
@@ -182,13 +245,13 @@ public class GameManager : MonoBehaviour
                 this.GameEnd.GetComponentInChildren<Text>().text = "Victory \n GG EZ";
             }
 
-            foreach(var fm in Formations)
+            if (Formations != null)
             {
-                if(fm.SlotAssignment.Keys.First().usingFormation)
+                foreach (var fm in Formations)
+                {
                     fm.UpdateSlots();
-                
+                }
             }
-            
         }
     }
 
@@ -201,7 +264,19 @@ public class GameManager : MonoBehaviour
         if (enemy != null && enemy.activeSelf && InMeleeRange(enemy))
         {
             this.Character.AddToDiary(" I Sword Attacked " + enemy.name);
-            
+
+            if (Formations != null)
+            {
+                foreach (var fm in Formations)
+                {
+                    if (enemy.GetComponent<Orc>() != null && fm.SlotAssignment.ContainsKey(enemy.GetComponent<Orc>()))
+                    {
+                        fm.RemoveCharacter(enemy.GetComponent<Orc>());
+                        fm.SlotAssignment.Remove(enemy.GetComponent<Orc>());
+                    }
+                }
+            }
+
             if (this.StochasticWorld)
             {
                 damage = enemy.GetComponent<Monster>().DmgRoll.Invoke();
@@ -265,7 +340,17 @@ public class GameManager : MonoBehaviour
             int damage = 0;
 
             Monster monster = enemy.GetComponent<Monster>();
-            
+            if (Formations != null)
+            {
+                foreach (var fm in Formations)
+                {
+                    if (enemy.GetComponent<Orc>() != null && fm.SlotAssignment.ContainsKey(enemy.GetComponent<Orc>()))
+                    {
+                        fm.RemoveCharacter(enemy.GetComponent<Orc>());
+                        fm.SlotAssignment.Remove(enemy.GetComponent<Orc>());
+                    }
+                }
+            }
 
             if (enemy.activeSelf && monster.InWeaponRange(GameObject.FindGameObjectWithTag("Player")))
             {
