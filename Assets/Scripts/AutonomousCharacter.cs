@@ -41,6 +41,8 @@ public class AutonomousCharacter : NPC
     private Text BestActionSequence;
     private Text DiaryText;
 
+    public int MaxIterations = 0;
+
     [Header("Character Settings")]
     public bool controlledByPlayer;
     public float Speed = 10.0f;
@@ -464,6 +466,7 @@ public class AutonomousCharacter : NPC
             {
                 this.CurrentAction = action;
                 newDecision = true;
+                MaxIterations++;
             }
         }
 
@@ -515,6 +518,7 @@ public class AutonomousCharacter : NPC
             {
                 var action = this.MCTSDecisionMaking.ChooseAction();
                 this.CurrentAction = action;
+                MaxIterations++;
                 AddToDiary(" I decided to " + action.Name);
             }
         }

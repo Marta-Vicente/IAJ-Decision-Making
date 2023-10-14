@@ -59,6 +59,8 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
             this.RandomGenerator = new System.Random();
             this.InitialState = currentStateWorldModel;
             this.TotalProcessingTime = 0;
+            this.TotalN = 0;
+            this.TotalQ = 0;
         }
 
 
@@ -69,9 +71,6 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
             //this.MaxSelectionDepthReached = 0;
             this.CurrentIterations = 0;
             this.CurrentIterationsInFrame = 0;
-
-            this.TotalN = 0;
-            this.TotalQ = 0;
  
             // create root node n0 for state s0
             this.InitialNode = new MCTSNode(this.InitialState)
@@ -242,8 +241,7 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
                     bestValue = child.Q / child.N;
                 }
             }
-
-            //Debug.Log(bestChild.Q + "/" + bestChild.N);
+         
             return bestChild;
         }
 

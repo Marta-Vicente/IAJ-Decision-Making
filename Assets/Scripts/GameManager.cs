@@ -237,12 +237,14 @@ public class GameManager : MonoBehaviour
                 this.GameEnd.SetActive(true);
                 this.gameEnded = true;
                 this.GameEnd.GetComponentInChildren<Text>().text = "You Died";
+                Debug.Log(Character.MaxIterations);
             }
             else if (this.Character.baseStats.Money >= 25)
             {
                 this.GameEnd.SetActive(true);
                 this.gameEnded = true;
                 this.GameEnd.GetComponentInChildren<Text>().text = "Victory \n GG EZ";
+                Debug.Log(Character.MaxIterations);
             }
 
             if (Formations != null)
