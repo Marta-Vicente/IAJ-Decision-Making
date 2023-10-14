@@ -50,25 +50,29 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel.ForwardModelActio
             int maxHP = (int)worldModel.GetProperty(Properties.MAXHP);
             int level = (int)worldModel.GetProperty(Properties.LEVEL);
             var beQuickGoal = worldModel.GetGoalValue(AutonomousCharacter.BE_QUICK_GOAL);
+            float time = (float)worldModel.GetProperty(Properties.TIME);
 
             worldModel.SetProperty(Properties.LEVEL, level + 1);
             worldModel.SetProperty(Properties.MAXHP, maxHP + 10);
             worldModel.SetProperty(Properties.XP, (int)0);
+            worldModel.SetProperty(Properties.TIME, time + GetDuration());
             worldModel.SetGoalValue(AutonomousCharacter.GAIN_LEVEL_GOAL, 0);
-            worldModel.SetGoalValue(AutonomousCharacter.BE_QUICK_GOAL, beQuickGoal + this.Duration);
+            worldModel.SetGoalValue(AutonomousCharacter.BE_QUICK_GOAL, beQuickGoal + this.Duration*3);
         }
 
         public override void ApplyActionEffects(WorldModelFEAR worldModel)
         {
             int maxHP = (int)worldModel.GetProperty(Properties.MAXHP);
             int level = (int)worldModel.GetProperty(Properties.LEVEL);
+            float time = (float)worldModel.GetProperty(Properties.TIME);
             var beQuickGoal = worldModel.GetGoalValue(AutonomousCharacter.BE_QUICK_GOAL);
 
             worldModel.SetProperty(Properties.LEVEL, level + 1);
             worldModel.SetProperty(Properties.MAXHP, maxHP + 10);
             worldModel.SetProperty(Properties.XP, (int)0);
+            worldModel.SetProperty(Properties.TIME, time + GetDuration());
             worldModel.SetGoalValue(AutonomousCharacter.GAIN_LEVEL_GOAL, 0);
-            worldModel.SetGoalValue(AutonomousCharacter.BE_QUICK_GOAL, beQuickGoal + this.Duration);
+            worldModel.SetGoalValue(AutonomousCharacter.BE_QUICK_GOAL, beQuickGoal + this.Duration * 3);
         }
 
         public override float GetGoalChange(Goal goal)

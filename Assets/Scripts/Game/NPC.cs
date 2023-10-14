@@ -90,7 +90,7 @@ namespace Assets.Scripts.Game
         */
         public float GetDistanceToTarget(Vector3 originalPosition, Vector3 targetPosition)
         {
-            return (float) Math.Sqrt(Math.Pow(targetPosition.x - originalPosition.x, 2) + Math.Pow(targetPosition.y - originalPosition.y, 2)) * 2;
+            return (float) Math.Sqrt(Math.Pow(targetPosition.x - originalPosition.x, 2) + Math.Pow(targetPosition.y - originalPosition.y, 2)) * 3;
         }
 
         #endregion

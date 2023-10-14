@@ -20,7 +20,7 @@ public class AutonomousCharacter : NPC
     public const string BE_QUICK_GOAL = "BeQuick";
     public const string GET_RICH_GOAL = "GetRich";
 
-    public const float DECISION_MAKING_INTERVAL = 40.0f;// HERE! 20.0f
+    public const float DECISION_MAKING_INTERVAL = 40.0f; //here20.0f;
     public const float RESTING_INTERVAL = 5.0f;
     public const float LEVELING_INTERVAL = 10.0f;
     public const float ENEMY_NEAR_CHECK_INTERVAL = 0.5f;
@@ -51,6 +51,7 @@ public class AutonomousCharacter : NPC
     public bool MTCSActive;
     public bool MTCSBiasActive;
     public bool GOAPFEARActive;
+    public bool MTCSLimitedPlayoutActive;
  
     [Header("Character Info")]
     public bool Resting = false;
@@ -71,6 +72,8 @@ public class AutonomousCharacter : NPC
     public MCTSBiasedPlayout MCTSDecisionMakingBiasedPlayout { get; set; }
 
     public DepthLimitedGOAPDecisionMakingFEAR GOAPFEARDecisionMaking { get; set; }
+
+    public MCTSLimitedPlayout MCTSLimitedPlayout { get; set; }
 
     public GameObject nearEnemy { get; private set; }
 
@@ -123,15 +126,15 @@ public class AutonomousCharacter : NPC
             ChangeRate = 0.2f
         };
 
-        this.GetRichGoal = new Goal(GET_RICH_GOAL, 0.6f)
+        this.GetRichGoal = new Goal(GET_RICH_GOAL, 2f)
         {
             InsistenceValue = 5.0f,
             ChangeRate = 0.2f
         };
 
-        this.BeQuickGoal = new Goal(BE_QUICK_GOAL, 0.1f)
+        this.BeQuickGoal = new Goal(BE_QUICK_GOAL, 2f)
         {
-            ChangeRate = 1f
+            ChangeRate = 2f
         };
 
         this.Goals = new List<Goal>
@@ -211,6 +214,11 @@ public class AutonomousCharacter : NPC
             {
                 var worldModel = new CurrentStateWorldModel(GameManager.Instance, this.Actions, this.Goals);
                 this.GOAPFEARDecisionMaking = new DepthLimitedGOAPDecisionMakingFEAR(worldModel, this.Actions, this.Goals);
+            }
+            else if(this.MTCSLimitedPlayoutActive)
+            {
+                var worldModel = new CurrentStateWorldModel(GameManager.Instance, this.Actions, this.Goals);
+                this.MCTSLimitedPlayout = new MCTSLimitedPlayout(worldModel);
             }
         }
 
@@ -300,6 +308,10 @@ public class AutonomousCharacter : NPC
             {
                 this.GOAPFEARDecisionMaking.InitializeDecisionMakingProcess();
             }
+            else if(MTCSLimitedPlayoutActive)
+            {
+                this.MCTSLimitedPlayout.InitializeMCTSearch();
+            }
         }
 
         if (this.controlledByPlayer)
@@ -350,6 +362,10 @@ public class AutonomousCharacter : NPC
         else if (this.GOAPFEARActive)
         {
             this.UpdateDLGOAPFEAR();
+        }
+        else if(this.MTCSLimitedPlayoutActive)
+        {
+            this.UpdateMCTSLimited();
         }
 
         if (this.CurrentAction != null)
@@ -528,7 +544,7 @@ public class AutonomousCharacter : NPC
             var text = "";
             if (endState != null)
             {
-                text += "Predicted World State:\n";
+                text += "Predicted World State with score of: " + MCTSDecisionMaking.Score + "\n";
                 text += "My Level:" + endState.GetProperty(Properties.LEVEL) + "\n";
                 text += "My HP:" + endState.GetProperty(Properties.HP) + "\n";
                 text += "My Money:" + endState.GetProperty(Properties.MONEY) + "\n";
@@ -591,7 +607,7 @@ public class AutonomousCharacter : NPC
             var text = "";
             if (endState != null)
             {
-                text += "Predicted World State:\n";
+                text += "Predicted World State with score " + MCTSDecisionMakingBiasedPlayout.Score + ":\n ";
                 text += "My Level:" + endState.GetProperty(Properties.LEVEL) + "\n";
                 text += "My HP:" + endState.GetProperty(Properties.HP) + "\n";
                 text += "My Money:" + endState.GetProperty(Properties.MONEY) + "\n";
@@ -643,6 +659,59 @@ public class AutonomousCharacter : NPC
         {
             this.BestActionSequence.text = "Best Action Sequence:\nNone";
             this.BestActionText.text = "Best Action: \n Node";
+        }
+    }
+
+    private void UpdateMCTSLimited()
+    {
+        bool newDecision = false;
+        if (this.MCTSLimitedPlayout.InProgress)
+        {
+            if (this.CurrentAction == null)
+            {
+                var action = this.MCTSLimitedPlayout.ChooseAction();
+                this.CurrentAction = action;
+                AddToDiary(" I decided to " + action.Name);
+            }
+        }
+        // Statistical and Debug data
+        this.TotalProcessingTimeText.text = "Process. Time: " + this.MCTSLimitedPlayout.TotalProcessingTime.ToString("F");
+
+        this.ProcessedActionsText.text = "Max Depth: " + this.MCTSLimitedPlayout.MaxPlayoutDepthReached.ToString() + "\n";
+
+        //this.ProcessedActionsText.text = "Max Depth Selection" + this.MCTSDecisionMakingBiasedPlayout.MaxSelectionDepthReached.ToString();
+
+        if (this.MCTSLimitedPlayout .BestFirstChild != null)
+        {
+            var q = this.MCTSLimitedPlayout.BestFirstChild.Q / this.MCTSLimitedPlayout.BestFirstChild.N;
+            this.BestDiscontentmentText.text = "Best Exp. Q value: " + q.ToString("F05") + "\n"
+                                                + "Total Q/N = " + this.MCTSLimitedPlayout.TotalQ + "/" + this.MCTSLimitedPlayout.TotalN;
+            var actionText = "";
+
+            foreach (var action in this.MCTSLimitedPlayout.BestActionSequence)
+            {
+                actionText += "\n" + action.Name;
+            }
+            this.BestActionSequence.text = "Best Action Sequence: " + actionText;
+
+            //Debug: What is the predicted state of the world?
+            var endState = MCTSLimitedPlayout.BestActionSequenceWorldState;
+            var text = "";
+            if (endState != null)
+            {
+                text += "Predicted World State with score of :" + MCTSLimitedPlayout.Score + "\n";
+                text += "My Level:" + endState.GetProperty(Properties.LEVEL) + "\n";
+                text += "My HP:" + endState.GetProperty(Properties.HP) + "\n";
+                text += "My Money:" + endState.GetProperty(Properties.MONEY) + "\n";
+                text += "Time Passsed:" + endState.GetProperty(Properties.TIME) + "\n";
+                this.BestActionText.text = text;
+            }
+            else this.BestActionText.text = "No EndState was found";
+        }
+        else
+        {
+            this.BestActionSequence.text = "Best Action Sequence:\nNone";
+            this.BestActionText.text = "";
         }
     }
 

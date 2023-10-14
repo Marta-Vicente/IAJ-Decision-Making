@@ -40,6 +40,8 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
 
         public int MaxPlayoutsPerNode { get; set; }
 
+        public float Score;
+
 
         //Debug
         /*
@@ -51,8 +53,8 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
         {
             this.InProgress = false;
             this.CurrentStateWorldModel = currentStateWorldModel;
-            this.MaxIterations = 10000;
-            this.MaxPlayoutsPerNode = 100;
+            this.MaxIterations = 100000;
+            this.MaxPlayoutsPerNode = 1;
             this.MaxIterationsPerFrame = 100;
             this.RandomGenerator = new System.Random();
             this.InitialState = currentStateWorldModel;
@@ -173,7 +175,9 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
             while(node != null)
             {
                 node.N += 1;
-                node.Q += reward /* plus utc stuff */;
+                /* if(node.parent != null)*/
+                node.Q += reward /* plus utc stuff || (node.Q / node.N) + C * Math.Sqrt(Math.Log(node.parent.N) / node.N) */;
+                //else node.Q += reward;
                 node = node.Parent;
 
                 this.TotalN += 1;
@@ -225,7 +229,7 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
 
         //this method is very similar to the bestUCTChild, but it is used to return the final action of the MCTS search, and so we do not care about
         //the exploration factor
-        protected MCTSNode BestChild(MCTSNode node)
+        protected virtual MCTSNode BestChild(MCTSNode node)
         {
             if(node.ChildNodes.Count == 0) return null;
             MCTSNode bestChild = node.ChildNodes[0];
@@ -264,6 +268,9 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
                 node = bestChild;
                 this.BestActionSequenceWorldState = node.State;
             }
+
+            if(this.BestActionSequenceWorldState != null) this.Score = this.BestActionSequenceWorldState.GetScore();
+            else this.Score = 0;
 
             return this.BestFirstChild.Action;
         }

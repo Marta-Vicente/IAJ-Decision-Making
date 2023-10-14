@@ -175,7 +175,7 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel
 
             // 0.0 loss , 1 win
 
-            if (HP <= 0) 
+            if (HP <= 0 || time >= 150f) 
                 return 0.0f;
             else if (money == 25)
                 return 1.0f;

@@ -11,7 +11,7 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel.ForwardModelActio
         public Rest(AutonomousCharacter character) : base("Rest")
         {
             Character = character;
-            Duration = 2.0f;
+            Duration = AutonomousCharacter.RESTING_INTERVAL;
         }
 
         public override bool CanExecute()
@@ -54,7 +54,7 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel.ForwardModelActio
             }
             else if (goal.Name == AutonomousCharacter.BE_QUICK_GOAL)
             {
-                change += this.Duration;
+                change += this.Duration*3;
             }
  
             return change;
@@ -74,6 +74,7 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel.ForwardModelActio
             var currentHP = (int)worldModel.GetProperty(Properties.HP);
             var surviveGoal = worldModel.GetGoalValue(AutonomousCharacter.SURVIVE_GOAL);
             var beQuickGoal = worldModel.GetGoalValue(AutonomousCharacter.BE_QUICK_GOAL);
+            float time = (float)worldModel.GetProperty(Properties.TIME);
 
             var change = 0;
             var enemyNear = 0;
@@ -91,7 +92,8 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel.ForwardModelActio
 
             worldModel.SetProperty(Properties.HP, currentHP + change);
             worldModel.SetGoalValue(AutonomousCharacter.SURVIVE_GOAL, surviveGoal - change + enemyNear);
-            worldModel.SetGoalValue(AutonomousCharacter.BE_QUICK_GOAL, beQuickGoal + this.Duration);
+            worldModel.SetGoalValue(AutonomousCharacter.BE_QUICK_GOAL, beQuickGoal + this.Duration * 3);
+            worldModel.SetProperty(Properties.TIME, time + GetDuration());
 
         }
 
@@ -103,6 +105,7 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel.ForwardModelActio
             var currentHP = (int)worldModel.GetProperty(Properties.HP);
             var surviveGoal = worldModel.GetGoalValue(AutonomousCharacter.SURVIVE_GOAL);
             var beQuickGoal = worldModel.GetGoalValue(AutonomousCharacter.BE_QUICK_GOAL);
+            float time = (float)worldModel.GetProperty(Properties.TIME);
 
             var change = 0;
             var enemyNear = 0;
@@ -120,7 +123,8 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel.ForwardModelActio
 
             worldModel.SetProperty(Properties.HP, currentHP + change);
             worldModel.SetGoalValue(AutonomousCharacter.SURVIVE_GOAL, surviveGoal - change + enemyNear);
-            worldModel.SetGoalValue(AutonomousCharacter.BE_QUICK_GOAL, beQuickGoal + this.Duration);
+            worldModel.SetGoalValue(AutonomousCharacter.BE_QUICK_GOAL, beQuickGoal + this.Duration*3);
+            worldModel.SetProperty(Properties.TIME, time + GetDuration());
 
         }
 

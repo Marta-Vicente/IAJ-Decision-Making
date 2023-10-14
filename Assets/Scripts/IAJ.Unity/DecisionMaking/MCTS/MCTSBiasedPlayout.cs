@@ -16,7 +16,7 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
 
         public MCTSBiasedPlayout(CurrentStateWorldModel currentStateWorldModel) : base(currentStateWorldModel)
         {
-            this.MaxIterations = 5000;
+            this.MaxIterations = 10000;
             this.MaxPlayoutsPerNode = 1;
         }
 
@@ -35,15 +35,6 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
                 actionPicked.ApplyActionEffects(initialStateForPlayout);
                 currentDepth++;
             }
-            /*
-            while (currentDepth < maxDepthAllowed && !initialStateForPlayout.IsTerminal())
-            {
-                executableActions = initialStateForPlayout.GetExecutableActions();
-                var actionPicked = GetBestActionH(executableActions, initialStateForPlayout);
-                actionPicked.ApplyActionEffects(initialStateForPlayout);
-                currentDepth++;
-            }
-            */
             if (currentDepth > this.MaxPlayoutDepthReached) this.MaxPlayoutDepthReached = currentDepth;
 
             return initialStateForPlayout.GetScore();
