@@ -21,7 +21,6 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
         }
 
         // Selection and Expantion
-
         protected override float Playout(WorldModel initialStateForPlayout)
         {
             Action[] executableActions;
@@ -39,8 +38,9 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
 
             return initialStateForPlayout.GetScore();
         }
-
         
+
+
         private Action GetBestActionH(Action[] actions, WorldModel worldModel)
         {
             var largertH = 0f;

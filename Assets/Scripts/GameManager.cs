@@ -241,12 +241,14 @@ public class GameManager : MonoBehaviour
             {
                 this.GameEnd.SetActive(true);
                 this.gameEnded = true;
+                Debug.Log(Character.MaxIterations);
                 this.GameEnd.GetComponentInChildren<Text>().text = "You Died";
             }
             else if (this.Character.baseStats.Money >= 25)
             {
                 this.GameEnd.SetActive(true);
                 this.gameEnded = true;
+                Debug.Log(Character.MaxIterations);
                 this.GameEnd.GetComponentInChildren<Text>().text = "Victory \n GG EZ";
             }
 
@@ -254,7 +256,8 @@ public class GameManager : MonoBehaviour
             {
                 foreach (var fm in Formations)
                 {
-                    fm.UpdateSlots();
+                    if (fm.SlotAssignment.Count != 0 && (fm.SlotAssignment.Keys.First().usingFormation || fm.SlotAssignment.Keys.Last().usingFormation))
+                        fm.UpdateSlots();
                 }
             }
         }

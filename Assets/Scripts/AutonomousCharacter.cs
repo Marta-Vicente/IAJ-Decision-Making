@@ -40,6 +40,7 @@ public class AutonomousCharacter : NPC
     private Text BestActionText;
     private Text BestActionSequence;
     private Text DiaryText;
+    public int MaxIterations = 0;
 
     [Header("Character Settings")]
     public bool controlledByPlayer;
@@ -418,6 +419,7 @@ public class AutonomousCharacter : NPC
         {
             //choose an action using the GOB Decision Making process
             var action = this.GOBDecisionMaking.ChooseAction();
+            MaxIterations++;
             if (action != null && action != this.CurrentAction)
             {
                 this.CurrentAction = action;
@@ -464,6 +466,7 @@ public class AutonomousCharacter : NPC
             {
                 this.CurrentAction = action;
                 newDecision = true;
+                MaxIterations++;
             }
         }
 
@@ -516,6 +519,7 @@ public class AutonomousCharacter : NPC
                 var action = this.MCTSDecisionMaking.ChooseAction();
                 this.CurrentAction = action;
                 AddToDiary(" I decided to " + action.Name);
+                MaxIterations++;
             }
         }
 
@@ -565,7 +569,8 @@ public class AutonomousCharacter : NPC
         bool newDecision = false;
         if (this.MCTSDecisionMakingBiasedPlayout.InProgress)
         {
-            if(this.CurrentAction == null)
+            MaxIterations++;
+            if (this.CurrentAction == null)
             {
                 var action = this.MCTSDecisionMakingBiasedPlayout.ChooseAction();
                 this.CurrentAction = action;
@@ -667,6 +672,7 @@ public class AutonomousCharacter : NPC
         bool newDecision = false;
         if (this.MCTSLimitedPlayout.InProgress)
         {
+            MaxIterations++;
             if (this.CurrentAction == null)
             {
                 var action = this.MCTSLimitedPlayout.ChooseAction();
