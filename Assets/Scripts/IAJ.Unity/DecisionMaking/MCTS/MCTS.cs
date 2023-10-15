@@ -53,7 +53,7 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
         {
             this.InProgress = false;
             this.CurrentStateWorldModel = currentStateWorldModel;
-            this.MaxIterations = 1000;
+            this.MaxIterations = 500;
             this.MaxPlayoutsPerNode = 1000;
             this.MaxIterationsPerFrame = 100;
             this.RandomGenerator = new System.Random();
@@ -92,6 +92,8 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
             //InitializeMCTSearch();
             float reward;
 
+            var StartTime = Time.realtimeSinceStartup;
+
             int i = this.MaxIterations;
             while(i > 0)
             {
@@ -106,7 +108,7 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
 
             }
 
-            this.TotalProcessingTime += Time.deltaTime;
+            this.TotalProcessingTime += Time.realtimeSinceStartup - StartTime;
             this.InProgress = false;
           
             return BestAction(InitialNode);
