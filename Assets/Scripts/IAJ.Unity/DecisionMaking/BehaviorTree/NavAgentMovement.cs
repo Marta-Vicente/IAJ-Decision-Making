@@ -12,12 +12,11 @@ using Assets.Scripts.IAJ.Unity.DecisionMaking.BehaviorTree;
 
 namespace Assets.Scripts.IAJ.Unity.DecisionMaking.BehaviorTree.BehaviourTrees
 {
-    class NavAgentMovement : Selector
+    class NavAgentMovement : Patrol
     {
-        public IsCharacterNearTarget checker;
-
         public NavAgentMovement(Monster character, Vector3 PositionA, Vector3 PositionB)
         {
+            hunting = new MoveTo(character, character.DefaultPosition, 1f, false, HuntingTimerMax);
             List<Task> tasks = new List<Task>();
             tasks.Add(
                 new Sequence(
@@ -29,12 +28,32 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.BehaviorTree.BehaviourTrees
                  )
             );
             this.children = tasks;
+
+            Scream += HeardScream;
         }
 
         public override Result Run()
         {
+            if (IsOnTheHunt)
+            {
+                Result result = hunting.Run();
+                if (result == Result.Success || result == Result.Failure)
+                {
+                    currentChild = 0;
+                    IsOnTheHunt = false;
+
+                }
+                return Result.Running;
+            }
             return children[0].Run();
         }
 
+
+        public override void HeardScream(object sender, Vector3 e)
+        {
+            IsOnTheHunt = true;
+            HuntingTarget = e;
+            hunting.Target = HuntingTarget;
+        }
     }
 }

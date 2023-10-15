@@ -83,7 +83,7 @@ namespace Assets.Scripts.IAJ.Unity.Formations
             {
                 if (SlotAssignment[npc] > 0 || Pattern.FreeAnchor)
                 {
-                    if(Vector3.Distance(npc.transform.position, anchor) < 10f)
+                    if(Vector3.Distance(npc.transform.position, anchor) < 5f)
                     {
                         //npc.setZombieModOff();
                         int slotNumber = SlotAssignment[npc];

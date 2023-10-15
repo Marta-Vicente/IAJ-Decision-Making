@@ -21,8 +21,12 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.BehaviorTree.BehaviourTrees
         public Vector3 HuntingTarget;
         public float HuntingTimerMax = 20f;
 
-        private Orc orc;
+        protected Orc orc;
 
+        protected Patrol()
+        {
+
+        }
         public Patrol(Monster character, GameObject target)
         {
             orc = (Orc) character;
@@ -144,7 +148,7 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.BehaviorTree.BehaviourTrees
             return Result.Success;
         }
 
-        public void HeardScream(object sender, Vector3 e)
+        public virtual void HeardScream(object sender, Vector3 e)
         {
             //Debug.Log("WAAAAGHH! at " + e);
             orc.usingFormation = false;
