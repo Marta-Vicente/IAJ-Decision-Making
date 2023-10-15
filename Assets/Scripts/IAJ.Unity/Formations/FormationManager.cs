@@ -5,6 +5,7 @@ using Assets.Scripts.Game.NPCs;
 using System.Collections.Generic;
 using UnityEngine.AI;
 using System.Linq;
+using Assets.Scripts.IAJ.Unity.DecisionMaking.BehaviorTree.BehaviourTrees;
 
 namespace Assets.Scripts.IAJ.Unity.Formations
 {
@@ -82,19 +83,31 @@ namespace Assets.Scripts.IAJ.Unity.Formations
             {
                 if (SlotAssignment[npc] > 0 || Pattern.FreeAnchor)
                 {
-                    int slotNumber = SlotAssignment[npc];
-                    var slot = Pattern.GetSlotLocation(this, slotNumber);
+                    if(Vector3.Distance(npc.transform.position, anchor) < 10f)
+                    {
+                        //npc.setZombieModOff();
+                        int slotNumber = SlotAssignment[npc];
+                        var slot = Pattern.GetSlotLocation(this, slotNumber);
 
-                    var locationPosition = anchor + orientationMatrix * slotNumber;
-                    var locationOrientation = orientationMatrix + slot;
+                        var locationPosition = anchor + orientationMatrix * slotNumber;
+                        var locationOrientation = orientationMatrix + slot;
 
-                    // and add drift componenet.
+                        // and add drift componenet.
 
-                    locationPosition -= Vector3.one * 0.1f;
-                    //locationOrientation -= 0.1f;
+                        locationPosition -= Vector3.one * 0.1f;
+                        //locationOrientation -= 0.1f;
 
-                    npc.StartPathfinding(locationPosition);
-                    npc.GetComponent<NavMeshAgent>().updateRotation = true;
+                        npc.StartPathfinding(locationPosition);
+                        npc.GetComponent<NavMeshAgent>().updateRotation = true;
+                    }
+                    else
+                    {
+                        //Debug.Log(npc.ToString());
+                        //npc.setZombieModOn(anchor);
+                        npc.StartPathfinding(anchor);
+                        npc.GetComponent<NavMeshAgent>().updateRotation = true;
+                    }
+                    
 
                 }
             }

@@ -17,7 +17,7 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
         public MCTSBiasedPlayout(CurrentStateWorldModel currentStateWorldModel) : base(currentStateWorldModel)
         {
             this.MaxIterations = 10000;
-            this.MaxPlayoutsPerNode = 1;
+            this.MaxPlayoutsPerNode = 10;
         }
 
         // Selection and Expantion
@@ -40,7 +40,7 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
             return initialStateForPlayout.GetScore();
         }
 
-        /*
+        
         private Action GetBestActionH(Action[] actions, WorldModel worldModel)
         {
             var largertH = 0f;
@@ -72,13 +72,15 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
                 }
             }
 
+            if (biasActions.Count == 0) return actions[RandomGenerator.Next(actions.Length)];
+
             var ActionNumber = RandomGenerator.Next(biasActions.Count);
 
             return biasActions[ActionNumber];
         }
-        */
         
-       
+        
+        /*       
         private Action GetBestActionH(Action[] actions, WorldModel worldModel)
         {
             var bestH = 1000f;
@@ -97,5 +99,6 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
 
             return bestAction;
         }
+        */
     }
 }

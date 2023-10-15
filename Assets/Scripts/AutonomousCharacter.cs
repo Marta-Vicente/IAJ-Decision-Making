@@ -529,8 +529,8 @@ public class AutonomousCharacter : NPC
         if (this.MCTSDecisionMaking.BestFirstChild != null)
         {
             var q = this.MCTSDecisionMaking.BestFirstChild.Q / this.MCTSDecisionMaking.BestFirstChild.N;
-            this.BestDiscontentmentText.text = "Best Exp. Q value: " + q.ToString("F05") + "\n" 
-                                                + "Total Q/N = " + this.MCTSDecisionMaking.TotalQ + "/" + this.MCTSDecisionMaking.TotalN;
+            this.BestDiscontentmentText.text = "Best Exp. Q value: " + q.ToString("F05") + "\n"; 
+                                               // + "Total Q/N = " + this.MCTSDecisionMaking.TotalQ + "/" + this.MCTSDecisionMaking.TotalN;
             var actionText = "";
 
             foreach (var action in this.MCTSDecisionMaking.BestActionSequence)
@@ -592,8 +592,8 @@ public class AutonomousCharacter : NPC
         if (this.MCTSDecisionMakingBiasedPlayout.BestFirstChild != null)
         {
             var q = this.MCTSDecisionMakingBiasedPlayout.BestFirstChild.Q / this.MCTSDecisionMakingBiasedPlayout.BestFirstChild.N;
-            this.BestDiscontentmentText.text = "Best Exp. Q value: " + q.ToString("F05") + "\n"
-                                                + "Total Q/N = " + this.MCTSDecisionMakingBiasedPlayout.TotalQ + "/" + this.MCTSDecisionMakingBiasedPlayout.TotalN;
+            this.BestDiscontentmentText.text = "Best Exp. Q value: " + q.ToString("F05") + "\n";
+                                                //+ "Total Q/N = " + this.MCTSDecisionMakingBiasedPlayout.TotalQ + "/" + this.MCTSDecisionMakingBiasedPlayout.TotalN;
             var actionText = "";
 
             foreach (var action in this.MCTSDecisionMakingBiasedPlayout.BestActionSequence)
@@ -684,8 +684,8 @@ public class AutonomousCharacter : NPC
         if (this.MCTSLimitedPlayout .BestFirstChild != null)
         {
             var q = this.MCTSLimitedPlayout.BestFirstChild.Q / this.MCTSLimitedPlayout.BestFirstChild.N;
-            this.BestDiscontentmentText.text = "Best Exp. Q value: " + q.ToString("F05") + "\n"
-                                                + "Total Q/N = " + this.MCTSLimitedPlayout.TotalQ + "/" + this.MCTSLimitedPlayout.TotalN;
+            this.BestDiscontentmentText.text = "Best Exp. Q value: " + q.ToString("F05") + "\n";
+                                               // + "Total Q/N = " + this.MCTSLimitedPlayout.TotalQ + "/" + this.MCTSLimitedPlayout.TotalN;
             var actionText = "";
 
             foreach (var action in this.MCTSLimitedPlayout.BestActionSequence)

@@ -23,8 +23,8 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.BehaviorTree.BehaviourTrees
                 new Sequence(
                         new List<Task>
                         {
-                            new MoveTo(character, new Vector3(PositionA.x, PositionA.y, PositionA.z), 1.0f, false, 50f),
-                            new MoveTo(character, new Vector3(PositionB.x, PositionB.y, PositionB.z), 1.0f, false, 50f)
+                            new MoveTo(character, new Vector3(PositionA.x, PositionA.y, PositionA.z), 1.0f),
+                            new MoveTo(character, new Vector3(PositionB.x, PositionB.y, PositionB.z), 1.0f)
                         }
                  )
             );

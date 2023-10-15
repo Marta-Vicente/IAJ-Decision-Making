@@ -53,8 +53,8 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
         {
             this.InProgress = false;
             this.CurrentStateWorldModel = currentStateWorldModel;
-            this.MaxIterations = 100000;
-            this.MaxPlayoutsPerNode = 1;
+            this.MaxIterations = 1000;
+            this.MaxPlayoutsPerNode = 1000;
             this.MaxIterationsPerFrame = 100;
             this.RandomGenerator = new System.Random();
             this.InitialState = currentStateWorldModel;
@@ -96,7 +96,7 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
             while(i > 0)
             {
                 var node1 = Selection(InitialNode);
-                for(int j=0; j < this.MaxPlayoutsPerNode; j++)
+                for (int j=0; j < this.MaxPlayoutsPerNode; j++)
                 {
                     var node1Copy = node1.State.GenerateChildWorldModel();
                     reward = Playout(node1Copy);
@@ -183,7 +183,6 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
                 this.TotalN += 1;
                 this.TotalQ += (int) reward;
             }
-
         }
 
         protected MCTSNode Expand(MCTSNode parent, Action action)

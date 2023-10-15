@@ -17,7 +17,7 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
         public MCTSLimitedPlayout(CurrentStateWorldModel currentStateWorldModel) : base(currentStateWorldModel)
         {
             this.MaxIterations = 5000;
-            this.MaxPlayoutsPerNode = 1;
+            this.MaxPlayoutsPerNode = 10;
         }
 
         // Selection and Expantion

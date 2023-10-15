@@ -34,6 +34,7 @@ namespace Assets.Scripts.Game.NPCs
         protected NavMeshAgent agent;
         public GameObject Target { get; set; }
         public Task BehaviourTree;
+        private Task oldFBT = null;
 
         public bool usingFormation;
 
@@ -110,6 +111,25 @@ namespace Assets.Scripts.Game.NPCs
         public bool InWeaponRange(GameObject target)
         { 
             return Vector3.Distance(this.transform.position, target.transform.position) <= enemyStats.WeaponRange; 
+        }
+
+
+        public void setZombieModOn(Vector3 pos)
+        {
+            if(oldFBT == null)
+            {
+                oldFBT = BehaviourTree;
+                BehaviourTree = new OffRoutBT(this, pos);
+            }     
+        }
+
+        public void setZombieModOff()
+        {
+            if(oldFBT != null)
+            {
+                BehaviourTree = oldFBT;
+                oldFBT = null;
+            }
         }
 
     }

@@ -37,9 +37,9 @@ namespace Assets.Scripts.IAJ.Unity.Formations
         {
             0 => formation.AnchorPosition,
             1 => formation.AnchorPosition,
-            2 => formation.AnchorPosition + offset * (Quaternion.Euler(0f, 0f, 120f) * this.GetOrientation(formation)),
-            3 => formation.AnchorPosition + offset * (Quaternion.Euler(0f, 0f, 240f) * this.GetOrientation(formation)),
-            _ => formation.AnchorPosition + offset * (slotNumber-2) * (Quaternion.Euler(0f, 0f, 120f * slotNumber) * this.GetOrientation(formation))
+            2 => formation.AnchorPosition + offset * (Quaternion.Euler(0f, 120f, 0f) * this.GetOrientation(formation)),
+            3 => formation.AnchorPosition + offset * (Quaternion.Euler(0f, 240f, 0f) * this.GetOrientation(formation)),
+            _ => formation.AnchorPosition + offset * (slotNumber-2) * (Quaternion.Euler(0f, 120f, 0f * slotNumber) * this.GetOrientation(formation))
         };
 
         public override  bool SupportSlot(int slotCount)

@@ -80,6 +80,7 @@ public class GameManager : MonoBehaviour
 
 
         //To use line make orc 3,4 using formation = true, 5 is anchor, get rid of nav mach to 1000y
+        /*
         try
         {
             var monster5 = FormationOrc5;
@@ -115,10 +116,10 @@ public class GameManager : MonoBehaviour
             Debug.Log("Normal Dungeon, Formations off");
             this.Formations = null;
         }
-        
+        */
 
         //To use triangule make orc 3,4,5 using formation = true, no one is anchor, put nav mach at 0
-        /*
+       
         try
         {
             var monster5 = FormationOrc5;
@@ -156,7 +157,7 @@ public class GameManager : MonoBehaviour
             Debug.Log("Normal Dungeon, Formations off");
             this.Formations = null;
         }
-       */
+      
 
 
     }
