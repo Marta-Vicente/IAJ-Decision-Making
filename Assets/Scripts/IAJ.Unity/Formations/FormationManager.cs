@@ -68,7 +68,7 @@ namespace Assets.Scripts.IAJ.Unity.Formations
         {
             var slot = SlotAssignment[character];
             SlotAssignment.Remove(character);
-            if (this.SlotAssignment.Keys.First().usingFormation || this.SlotAssignment.Keys.Last().usingFormation)
+            if (this.SlotAssignment.Count != 0 && (this.SlotAssignment.Keys.First().usingFormation || this.SlotAssignment.Keys.Last().usingFormation))
                 UpdateSlots();
         }
 

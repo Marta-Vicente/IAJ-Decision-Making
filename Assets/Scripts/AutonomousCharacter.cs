@@ -671,6 +671,7 @@ public class AutonomousCharacter : NPC
         bool newDecision = false;
         if (this.MCTSLimitedPlayout.InProgress)
         {
+            MaxIterations++;
             if (this.CurrentAction == null)
             {
                 var action = this.MCTSLimitedPlayout.ChooseAction();

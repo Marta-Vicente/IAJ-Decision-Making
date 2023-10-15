@@ -31,8 +31,10 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
             while (currentDepth < maxDepthAllowed && !initialStateForPlayout.IsTerminal())
             {
                 executableActions = initialStateForPlayout.GetExecutableActions();
-                var ActionNumber = RandomGenerator.Next(executableActions.Length);
-                executableActions[ActionNumber].ApplyActionEffects(initialStateForPlayout);
+                var ActionNumber = RandomGenerator.Next(executableActions.Length);  //LIMITED
+                //var actionPicked = GetBestActionH(executableActions, initialStateForPlayout); //LIMITED + BIAS
+                executableActions[ActionNumber].ApplyActionEffects(initialStateForPlayout); //LIMITED
+                //actionPicked.ApplyActionEffects(initialStateForPlayout); //LIMITED + BIAS
                 currentDepth++;
             }
             
@@ -93,6 +95,45 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
             }
 
             return H1 + H2 + H3 + H4 + H5;
+        }
+
+        //BIAS + LIMITED
+        private Action GetBestActionH(Action[] actions, WorldModel worldModel)
+        {
+            var largertH = 0f;
+            List<Action> biasActions = new List<Action>();
+            for (int i = 0; i < actions.Length; i++)
+            {
+                if (actions[i].GetHValue(worldModel) > largertH) largertH = actions[i].GetHValue(worldModel);
+            }
+
+            List<Pair<Action, int>> bestActionsPair = new List<Pair<Action, int>>();
+            for (int i = 0; i < actions.Length; i++)
+            {
+                var H = actions[i].GetHValue(worldModel);
+                if (H <= 0f) H = 0.001f;
+                int biasValue = (int)(largertH / H);
+
+                //Everyone gets a chance
+                if (biasValue > 10) biasValue = 10;
+                else if (biasValue < 2) biasValue = 0;
+
+                bestActionsPair.Add(new Pair<Action, int>(actions[i], biasValue));
+            }
+
+            foreach (var pair in bestActionsPair)
+            {
+                for (int i = 0; i < pair.Right; i++)
+                {
+                    biasActions.Add(pair.Left);
+                }
+            }
+
+            if (biasActions.Count == 0) return actions[RandomGenerator.Next(actions.Length)];
+
+            var ActionNumber = RandomGenerator.Next(biasActions.Count);
+
+            return biasActions[ActionNumber];
         }
 
     }
