@@ -69,6 +69,9 @@ public class GameManager : MonoBehaviour
     public GameObject FormationOrc4;
     public GameObject FormationOrc5;
 
+    public bool UseFormationLine;
+    public bool UseFormationTri;
+
     void Awake()
     {
         Instance = this;
@@ -80,85 +83,86 @@ public class GameManager : MonoBehaviour
 
 
         //To use line make orc 3,4 using formation = true, 5 is anchor, get rid of nav mach to 1000y
-        /*
-        try
+        if (UseFormationLine)
         {
-            var monster5 = FormationOrc5;
-            var monster3 = FormationOrc3;
-            var monster4 = FormationOrc4;
+            try
+            {
+                var monster5 = FormationOrc5;
+                var monster3 = FormationOrc3;
+                var monster4 = FormationOrc4;
 
-            //monster5.GetComponent<Orc>().isAnchor = true;
-            
-            var lineForm = new LineFormation();
-            var lineFormationManager = new FormationManager(new List<Monster>()
+                //monster5.GetComponent<Orc>().isAnchor = true;
+
+                var lineForm = new LineFormation();
+                var lineFormationManager = new FormationManager(new List<Monster>()
             {
                 monster5.GetComponent<Orc>(),
                 monster4.GetComponent<Orc>(),
                 monster3.GetComponent<Orc>()
             },
-            lineForm, monster5.transform.position, monster5.transform.forward);
+                lineForm, monster5.transform.position, monster5.transform.forward);
 
-            
-            lineFormationManager.AddCharacter(monster5.GetComponent<Orc>());
-            lineFormationManager.AddCharacter(monster3.GetComponent<Orc>());
-            lineFormationManager.AddCharacter(monster4.GetComponent<Orc>());
-            
-            
-            this.Formations = new List<FormationManager>()
+
+                lineFormationManager.AddCharacter(monster5.GetComponent<Orc>());
+                lineFormationManager.AddCharacter(monster3.GetComponent<Orc>());
+                lineFormationManager.AddCharacter(monster4.GetComponent<Orc>());
+
+
+                this.Formations = new List<FormationManager>()
             {
                 lineFormationManager
             };
-            
-            
+
+
+            }
+            catch
+            {
+                Debug.Log("Normal Dungeon, Formations off");
+                this.Formations = null;
+            }
         }
-        catch
-        {
-            Debug.Log("Normal Dungeon, Formations off");
-            this.Formations = null;
-        }
-        */
 
         //To use triangule make orc 3,4,5 using formation = true, no one is anchor, put nav mach at 0
-       
-        try
+        else if (UseFormationTri)
         {
-            var monster5 = FormationOrc5;
-            var monster3 = FormationOrc3;
-            var monster4 = FormationOrc4;
+            try
+            {
+                var monster5 = FormationOrc5;
+                var monster3 = FormationOrc3;
+                var monster4 = FormationOrc4;
 
-            // NavAgent.transform.position = new Vector3(NavAgent.transform.position.x, 0, NavAgent.transform.position.z);
-            monster5.GetComponent<Orc>().isAnchor = false;
-            NavAgent.GetComponent<Orc>().setNavAgentBehavior();
+                // NavAgent.transform.position = new Vector3(NavAgent.transform.position.x, 0, NavAgent.transform.position.z);
+                monster5.GetComponent<Orc>().isAnchor = false;
+                NavAgent.GetComponent<Orc>().setNavAgentBehavior();
 
-            var triangularFormation = new TriangularFormation();
-            var trianguleFormationManager = new FormationManager(new List<Monster>()
+                var triangularFormation = new TriangularFormation();
+                var trianguleFormationManager = new FormationManager(new List<Monster>()
             {
                 NavAgent.GetComponent<Orc>(),
                 monster5.GetComponent<Orc>(),
                 monster4.GetComponent<Orc>(),
                 monster3.GetComponent<Orc>()
             },
-            triangularFormation, NavAgent.GetComponent<Orc>().transform.position, NavAgent.GetComponent<Orc>().transform.forward);
+                triangularFormation, NavAgent.GetComponent<Orc>().transform.position, NavAgent.GetComponent<Orc>().transform.forward);
 
 
-            trianguleFormationManager.AddCharacter(monster5.GetComponent<Orc>());
-            trianguleFormationManager.AddCharacter(monster3.GetComponent<Orc>());
-            trianguleFormationManager.AddCharacter(monster4.GetComponent<Orc>());
+                trianguleFormationManager.AddCharacter(monster5.GetComponent<Orc>());
+                trianguleFormationManager.AddCharacter(monster3.GetComponent<Orc>());
+                trianguleFormationManager.AddCharacter(monster4.GetComponent<Orc>());
 
 
-            this.Formations = new List<FormationManager>()
+                this.Formations = new List<FormationManager>()
             {
                 trianguleFormationManager
             };
 
+            }
+            catch
+            {
+                Debug.Log("Normal Dungeon, Formations off");
+                this.Formations = null;
+            }
         }
-        catch
-        {
-            Debug.Log("Normal Dungeon, Formations off");
-            this.Formations = null;
-        }
-      
-
 
     }
 
