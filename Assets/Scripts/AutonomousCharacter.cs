@@ -419,6 +419,7 @@ public class AutonomousCharacter : NPC
         {
             //choose an action using the GOB Decision Making process
             var action = this.GOBDecisionMaking.ChooseAction();
+            MaxIterations++;
             if (action != null && action != this.CurrentAction)
             {
                 this.CurrentAction = action;
