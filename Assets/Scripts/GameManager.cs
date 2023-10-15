@@ -256,7 +256,8 @@ public class GameManager : MonoBehaviour
             {
                 foreach (var fm in Formations)
                 {
-                    fm.UpdateSlots();
+                    if (fm.SlotAssignment.Keys.First().usingFormation || fm.SlotAssignment.Keys.Last().usingFormation)
+                        fm.UpdateSlots();
                 }
             }
         }

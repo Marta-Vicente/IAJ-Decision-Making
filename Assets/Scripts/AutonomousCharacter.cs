@@ -568,7 +568,8 @@ public class AutonomousCharacter : NPC
         bool newDecision = false;
         if (this.MCTSDecisionMakingBiasedPlayout.InProgress)
         {
-            if(this.CurrentAction == null)
+            MaxIterations++;
+            if (this.CurrentAction == null)
             {
                 var action = this.MCTSDecisionMakingBiasedPlayout.ChooseAction();
                 this.CurrentAction = action;
