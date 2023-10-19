@@ -53,14 +53,15 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
         {
             this.InProgress = false;
             this.CurrentStateWorldModel = currentStateWorldModel;
-            this.MaxIterations = 500;
-            this.MaxPlayoutsPerNode = 1000;
+            this.MaxIterations = 5000;
+            this.MaxPlayoutsPerNode = 25;
             this.MaxIterationsPerFrame = 100;
             this.RandomGenerator = new System.Random();
             this.InitialState = currentStateWorldModel;
             this.TotalProcessingTime = 0;
             this.TotalN = 0;
             this.TotalQ = 0;
+            this.MaxPlayoutDepthReached = 0;
         }
 
 
@@ -147,7 +148,7 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
                 currentDepth++;
             }
 
-            if(currentDepth > this.MaxSelectionDepthReached) this.MaxSelectionDepthReached = currentDepth;
+            this.MaxSelectionDepthReached = currentDepth;
 
             return currentNode;
         }
@@ -165,7 +166,7 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
                 currentDepth++;
             }
 
-            if(currentDepth > this.MaxPlayoutDepthReached) this.MaxPlayoutDepthReached = currentDepth;
+            if(this.MaxPlayoutDepthReached < currentDepth) this.MaxPlayoutDepthReached = currentDepth;
 
             return initialStateForPlayout.GetScore();
         }
@@ -236,7 +237,11 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
             float bestValue = 0;
             foreach (MCTSNode child in node.ChildNodes)
             {
-                if(child.N > 0 && child.Q / child.N > bestValue)
+                if(child.N == 0)
+                {
+                    return child;
+                }
+                if(child.Q / child.N > bestValue)
                 {
                     bestChild = child;
                     bestValue = child.Q / child.N;
@@ -248,9 +253,31 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
         }
 
 
+        protected virtual MCTSNode BestChildDebug(MCTSNode node)
+        {
+            if (node.ChildNodes.Count == 0) return null;
+            MCTSNode bestChild = node.ChildNodes[0];
+            float bestValue = 0;
+            foreach (MCTSNode child in node.ChildNodes)
+            {
+                if (child.N == 0)
+                {
+                    continue;
+                }
+                if (child.Q / child.N > bestValue)
+                {
+                    bestChild = child;
+                    bestValue = child.Q / child.N;
+                }
+            }
+
+            //Debug.Log(bestChild.Q + "/" + bestChild.N);
+            return bestChild;
+        }
+
         protected Action BestAction(MCTSNode node)
         {
-            var bestChild = this.BestChild(node);
+            var bestChild = this.BestChildDebug(node);
             if (bestChild == null) return null;
 
             this.BestFirstChild = bestChild;
@@ -262,7 +289,7 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
 
             while(!node.State.IsTerminal())
             {
-                bestChild = this.BestChild(node);
+                bestChild = this.BestChildDebug(node);
                 if (bestChild == null) break;
                 this.BestActionSequence.Add(bestChild.Action);
                 node = bestChild;

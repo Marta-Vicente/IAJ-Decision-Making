@@ -119,32 +119,64 @@ public class AutonomousCharacter : NPC
         //initialization of the GOB decision making
         //let's start by creating 4 main goals
 
-        this.SurviveGoal = new Goal(SURVIVE_GOAL, 0.2f);
-
-        this.GainLevelGoal = new Goal(GAIN_LEVEL_GOAL, 0.1f)
+        if (GOBActive)
         {
-            InsistenceValue = 10.0f,
-            ChangeRate = 0.2f
-        };
+            this.SurviveGoal = new Goal(SURVIVE_GOAL, 3f);
 
-        this.GetRichGoal = new Goal(GET_RICH_GOAL, 2f)
-        {
-            InsistenceValue = 5.0f,
-            ChangeRate = 0.2f
-        };
+            this.GainLevelGoal = new Goal(GAIN_LEVEL_GOAL, 1.0f)
+            {
+                InsistenceValue = 10.0f,
+                ChangeRate = 0.2f
+            };
 
-        this.BeQuickGoal = new Goal(BE_QUICK_GOAL, 2f)
-        {
-            ChangeRate = 2f
-        };
+            this.GetRichGoal = new Goal(GET_RICH_GOAL, 1f)
+            {
+                InsistenceValue = 10.0f,
+                ChangeRate = 0.2f
+            };
 
-        this.Goals = new List<Goal>
+            this.BeQuickGoal = new Goal(BE_QUICK_GOAL, 1f)
+            {
+                ChangeRate = 0.2f
+            };
+
+            this.Goals = new List<Goal>
+            {
+                this.SurviveGoal,
+                this.BeQuickGoal,
+                this.GetRichGoal,
+                this.GainLevelGoal
+            };
+        }
+        else
         {
+            this.SurviveGoal = new Goal(SURVIVE_GOAL, 1f);
+
+            this.GainLevelGoal = new Goal(GAIN_LEVEL_GOAL, 1.0f)
+            {
+                InsistenceValue = 10.0f,
+                ChangeRate = 0.2f
+            };
+
+            this.GetRichGoal = new Goal(GET_RICH_GOAL, 2f)
+            {
+                InsistenceValue = 10.0f,
+                ChangeRate = 1.0f
+            };
+
+            this.BeQuickGoal = new Goal(BE_QUICK_GOAL, 1f)
+            {
+                ChangeRate = 1.0f
+            };
+
+            this.Goals = new List<Goal>
+            {
             this.SurviveGoal,
             this.BeQuickGoal,
             this.GetRichGoal,
             this.GainLevelGoal
-        };
+            };
+        }
 
         //initialize the available actions
         //Uncomment commented actions after you implement them
@@ -239,7 +271,9 @@ public class AutonomousCharacter : NPC
             if (enemy != null)
             {
                 //HERE WHEN ENEMY IN FRONT RECALCULET ALL, Ping pong effect
-                //GameManager.Instance.WorldChanged = true;
+                if(GOBActive)
+                    GameManager.Instance.WorldChanged = true;
+                
                 AddToDiary(" There is " + enemy.name + " in front of me!");
                 this.nearEnemy = enemy;
             }
@@ -528,7 +562,7 @@ public class AutonomousCharacter : NPC
 
         this.ProcessedActionsText.text = "Max Depth: " + this.MCTSDecisionMaking.MaxPlayoutDepthReached.ToString() + "\n";
 
-        //this.ProcessedActionsText.text = "Max Depth Selection" + this.MCTSDecisionMaking.MaxSelectionDepthReached.ToString();
+        this.ProcessedActionsText.text += "Max Depth Selection: " + this.MCTSDecisionMaking.MaxSelectionDepthReached.ToString();
 
         if (this.MCTSDecisionMaking.BestFirstChild != null)
         {
@@ -592,7 +626,7 @@ public class AutonomousCharacter : NPC
 
         this.ProcessedActionsText.text = "Max Depth: " + this.MCTSDecisionMakingBiasedPlayout.MaxPlayoutDepthReached.ToString() + "\n";
 
-        //this.ProcessedActionsText.text = "Max Depth Selection" + this.MCTSDecisionMakingBiasedPlayout.MaxSelectionDepthReached.ToString();
+        this.ProcessedActionsText.text += "Max Depth Selection: " + this.MCTSDecisionMakingBiasedPlayout.MaxSelectionDepthReached.ToString();
 
         if (this.MCTSDecisionMakingBiasedPlayout.BestFirstChild != null)
         {
@@ -685,7 +719,7 @@ public class AutonomousCharacter : NPC
 
         this.ProcessedActionsText.text = "Max Depth: " + this.MCTSLimitedPlayout.MaxPlayoutDepthReached.ToString() + "\n";
 
-        //this.ProcessedActionsText.text = "Max Depth Selection" + this.MCTSDecisionMakingBiasedPlayout.MaxSelectionDepthReached.ToString();
+        this.ProcessedActionsText.text += "Max Depth Selection: " + this.MCTSDecisionMakingBiasedPlayout.MaxSelectionDepthReached.ToString();
 
         if (this.MCTSLimitedPlayout .BestFirstChild != null)
         {

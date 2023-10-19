@@ -3,6 +3,8 @@ using Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel.ForwardModelActions;
 using Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel;
 using UnityEngine;
 using System.Text;
+using System;
+using Action = Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel.Action;
 
 namespace Assets.Scripts.IAJ.Unity.DecisionMaking.GOB
 {
@@ -19,6 +21,8 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.GOB
 
         public float TotalProcessingTime = 0f;
         public static float BestDiscontentmentValue = float.MaxValue;
+
+        private static float bigger = 0f;
 
         // Utility based GOB
         public GOBDecisionMaking(List<Action> _actions, List<Goal> goals)
@@ -37,24 +41,6 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.GOB
             var discontentment = 0.0f;
             var duration = action.GetDuration();
 
-            /*
-            var bigger = 0f;
-            foreach (var goal in goals)
-            {
-                // Calculate the new value after the action
-                var newValue = goal.InsistenceValue + action.GetGoalChange(goal);
-
-                // The change rate is how much the goals changes per time
-                newValue += duration * goal.ChangeRate;
-
-                if (bigger < newValue) 
-                { 
-                    bigger = newValue;
-                }
-            }
-            */
-
-
             foreach (var goal in goals)
             {
                // Calculate the new value after the action
@@ -65,7 +51,7 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.GOB
 
                 //Here is a bug: Insistence varies between 0-10, it should be normalized
                 //discontentment += goal.GetDiscontentment(newValue)/float.MaxValue * 10;
-                discontentment += goal.GetDiscontentment(/*NormalizeGoalValues(newValue, 0, bigger)*/ newValue);
+                discontentment += goal.GetDiscontentment(NormalizeGoalValues(newValue, 0, 10)/*newValue*/);
             }
 
             if (discontentment < BestDiscontentmentValue)
@@ -86,7 +72,7 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.GOB
             Action bestAction = null;
 
             //bestAction = actions[0];
-            float bestValue = float.MaxValue;
+            float bestValue = float.PositiveInfinity;
             /*
             if (bestAction.CanExecute())
             {
@@ -97,6 +83,8 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.GOB
             var thirdBestValue = float.PositiveInfinity;
             secondBestAction = null;
             thirdBestAction = null;
+
+            //calculateBigger();
 
             foreach(var action in actions)
             {
@@ -133,21 +121,50 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.GOB
 
             TotalProcessingTime += Time.deltaTime;
 
+            BestDiscontentmentValue = bestValue;
+
             return bestAction;
         }
 
         public static float NormalizeGoalValues(float value, float min, float max)
         {
             if (value < 0) value = 0.0f;
+            if (value > max) value = max;
             // Normalizing to 0-1
             var x = (value - min) / (max - min);
 
             // Multiplying it by 10
             x *= 10;
 
-            Debug.Log(x);
-
             return x;
+        }
+
+        private void calculateBigger()
+        {
+            bigger = 0f;
+
+            foreach (var action in actions)
+            {
+                if (action.CanExecute())
+                {
+                    var duration = action.GetDuration();
+                    foreach (var goal in goals)
+                    {
+                        // Calculate the new value after the action
+                        var newValue = goal.InsistenceValue + action.GetGoalChange(goal);
+
+                        // The change rate is how much the goals changes per time
+                        newValue += duration * goal.ChangeRate;
+
+                        if (bigger < newValue)
+                        {
+                            bigger = newValue;
+                        }
+                    }
+                }
+
+            }
+
         }
 
 

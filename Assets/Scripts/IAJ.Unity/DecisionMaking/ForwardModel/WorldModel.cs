@@ -105,10 +105,23 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel
             {
                 var newValue = this.GetGoalValue(goal.Name);
 
-                discontentment += goal.GetDiscontentment(newValue);
+                discontentment += goal.GetDiscontentment(NormalizeGoalValues(newValue,0,10));
             }
 
             return discontentment;
+        }
+
+        public static float NormalizeGoalValues(float value, float min, float max)
+        {
+            if (value < 0) value = 0.0f;
+            if (value > max) value = max;
+            // Normalizing to 0-1
+            var x = (value - min) / (max - min);
+
+            // Multiplying it by 10
+            x *= 10;
+
+            return x;
         }
 
         public virtual Action GetNextAction()

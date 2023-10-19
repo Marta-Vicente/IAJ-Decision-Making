@@ -52,7 +52,7 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel.ForwardModelActio
         {
             var change = base.GetGoalChange(goal);
 
-            if (expectedHPChange > Character.baseStats.HP) expectedHPChange = float.MaxValue - 10;
+            //if (expectedHPChange > Character.baseStats.HP) expectedHPChange = float.MaxValue - 10;
 
             if (goal.Name == AutonomousCharacter.SURVIVE_GOAL)
             {
